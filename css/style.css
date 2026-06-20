@@ -1,3 +1,88 @@
+/* Variables de color de tus bocetos */
+:root {
+    --bg-primary: #a0e1eb;
+    --bg-secondary: #f0f2f5;
+    --text-dark: #333;
+    --btn-dark: #000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Fondo para el Login y Registro */
+.auth-body {
+    background-color: var(--bg-primary);
+    background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Tarjeta de los formularios */
+.auth-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.auth-container h2 {
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+/* Inputs y Botones */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--btn-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #333;
+}
+
+/* Enlaces extra */
+.auth-links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.auth-links a {
+    color: #0066cc;
+    text-decoration: none;
+}
 :root {
     --bg-sidebar: #a0e1eb;
     --bg-main: #f4f6fa;
