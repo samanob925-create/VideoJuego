@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Comunidad Gamer</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
     <div class="app-layout">
@@ -21,7 +21,7 @@
             <div class="nav-group">
                 <h3>Biblioteca</h3>
                 <button class="nav-item" data-target="mejores">📋 Mejores juegos</button>
-                <button class="nav-item" data-target="tendencias">🔥 Tendencias</button>
+                <button class="nav-item" data-target="tendencias">🔥 Tendencias (API)</button>
                 <button class="nav-item" data-target="menos">➖ Menos populares</button>
                 <button class="nav-item" data-target="favoritos">⭐ Favoritos</button>
                 <button class="nav-item" data-target="amigos">👥 Amigos / Chat</button>
@@ -37,84 +37,87 @@
             </header>
 
             <section id="inicio" class="view-section">
-                <h1>Los mejores juegos</h1>
-                <p style="color: #666;">Plataforma Play Station</p>
+                <h1 class="section-title">Los mejores juegos</h1>
+                <p class="section-subtitle">Selección del equipo</p>
                 <div class="game-grid">
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/b2a/b2a1bc2ccbf1a56673ebf115594b29bb.jpg" alt="Persona 5"><p>Persona 5 Royal</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg" alt="RDR2"><p>Red Dead Redemption 2</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/5ec/5ecac5cb026ec26a56efcc546364e348.jpg" alt="Elden Ring"><p>Elden Ring</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/713/713269608dc8f2f40f5a670a14b2de94.jpg" alt="TLOU"><p>The Last of Us</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/b2a/b2a1bc2ccbf1a56673ebf115594b29bb.jpg" alt="Persona 5"><h4>Persona 5 Royal</h4></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg" alt="RDR2"><h4>Red Dead Redemption 2</h4></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/5ec/5ecac5cb026ec26a56efcc546364e348.jpg" alt="Elden Ring"><h4>Elden Ring</h4></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/713/713269608dc8f2f40f5a670a14b2de94.jpg" alt="TLOU"><h4>The Last of Us</h4></div>
                 </div>
             </section>
 
             <section id="perfil" class="view-section d-none">
-                <h1>Perfil del Usuario</h1>
-                <div style="background: #fff; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-                    <h3 style="margin-bottom: 15px;">Datos de tu cuenta segura</h3>
+                <h1 class="section-title">Perfil del Usuario</h1>
+                <div style="background: #fff; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); max-width: 500px;">
                     <p><strong>Usuario:</strong> <span id="displayUser">Cargando...</span></p>
                     <p><strong>Correo:</strong> <span id="displayEmail">Cargando...</span></p>
-                    <p><strong>Plataforma Favorita:</strong> PlayStation</p>
-                </div>
-            </section>
-
-            <section id="mejores" class="view-section d-none">
-                <h1>Lo mejor de lo mejor de PlayStation</h1>
-                <div class="game-grid">
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be59.jpg" alt="GoW"><p>God of War</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/214/214b29aeff13a0ae6a70fc4426e85991.jpg" alt="Bloodborne"><p>Bloodborne</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/9aa/9aa42d16d425fa6f179fc9dc2f763647.jpg" alt="Spider-Man"><p>Spider-Man</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/cf4/cf40fb58abe414fd41ac7ce51a826451.jpg" alt="Ghost"><p>Ghost of Tsushima</p></div>
+                    <p><strong>Plataforma Favorita:</strong> Multiplataforma</p>
                 </div>
             </section>
 
             <section id="tendencias" class="view-section d-none">
-                <h1>Juegos más hablados esta semana</h1>
-                <div class="game-grid">
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg" alt="RDR2"><p>Red Dead Redemption 2</p></div>
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/5ec/5ecac5cb026ec26a56efcc546364e348.jpg" alt="Elden Ring"><p>Elden Ring</p></div>
+                <h1 class="section-title">Juegos Multiplataforma en Tendencia</h1>
+                <p class="section-subtitle">Datos obtenidos en tiempo real desde RAWG API.</p>
+                <div class="game-grid" id="contenedor-juegos">
+                    <p>Cargando catálogo...</p>
                 </div>
-            </section>
-
-            <section id="menos" class="view-section d-none">
-                <h1>Los menos jugados o peores</h1>
-                <div class="game-grid">
-                    <div class="game-card"><img src="https://media.rawg.io/media/games/00a/00a12e523f6f1f31f9b0711ee16bb1cf.jpg" alt="Skull and Bones"><p>Skull and Bones</p></div>
-                </div>
-            </section>
-
-            <section id="favoritos" class="view-section d-none">
-                <h1>Tus Favoritos</h1>
-                <p>Aquí aparecerán los juegos que marques con una estrella.</p>
             </section>
 
             <section id="amigos" class="view-section d-none">
-                <h1>Foro / Chat Global</h1>
-                <p style="color: #666; margin-bottom: 20px;">Comunícate con la comunidad (Lenguaje moderado activado).</p>
+                <h1 class="section-title">Comunidad y Amigos</h1>
                 
-                <div class="chat-box" id="caja-mensajes">
+                <h3 style="margin: 20px 0 10px; font-size: 1.1rem;">Sugerencias de Amistad</h3>
+                <div class="friends-container">
+                    <div class="friend-card">
+                        <div class="friend-info">
+                            <div class="friend-avatar" style="background: #e74c3c;">B</div>
+                            <div>
+                                <h4 style="margin-bottom: 3px;">El Bartolito</h4>
+                                <span style="font-size: 0.8rem; color: #666;">Activo hace 2 min.</span>
+                            </div>
+                        </div>
+                        <button class="btn-add-friend" onclick="alert('Solicitud enviada a El Bartolito')">+ Agregar amigo</button>
                     </div>
-                
+                    <div class="friend-card">
+                        <div class="friend-info">
+                            <div class="friend-avatar" style="background: #2ecc71;">L</div>
+                            <div>
+                                <h4 style="margin-bottom: 3px;">El_Linuxero</h4>
+                                <span style="font-size: 0.8rem; color: #666;">Activo hace 2 hor.</span>
+                            </div>
+                        </div>
+                        <button class="btn-add-friend" onclick="alert('Solicitud enviada a El_Linuxero')">+ Agregar amigo</button>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px; font-size: 1.1rem;">Foro Global</h3>
+                <div class="chat-box" id="caja-mensajes"></div>
                 <div class="chat-input-area">
-                    <input type="text" id="inputMensaje" placeholder="Escribe un mensaje aquí...">
+                    <input type="text" id="inputMensaje" placeholder="Escribe un mensaje en el foro...">
                     <button id="btnEnviarMensaje">Enviar</button>
                 </div>
             </section>
 
             <section id="noticias" class="view-section d-none">
-                <h1>Últimas noticias de videojuegos</h1>
-                <div style="display: flex; gap: 20px; background: #fff; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                    <img src="https://media.rawg.io/media/games/8d6/8d69eb6c32ed6acfd75f82d6c214bfc7.jpg" alt="Fortnite" style="width: 250px; border-radius: 10px; object-fit: cover;">
+                <h1 class="section-title">Últimas noticias de videojuegos</h1>
+                <div style="display: flex; gap: 20px; background: #fff; padding: 20px; border-radius: 12px; margin-top: 20px;">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop" alt="News" style="width: 250px; border-radius: 10px; object-fit: cover;">
                     <div>
-                        <h2>Nueva Actualización de Fortnite</h2>
-                        <p style="color: #555;">Se han filtrado nuevas skins y modos de juego para la próxima temporada. ¡Prepárate para el evento en vivo!</p>
+                        <h2 style="margin-bottom: 10px;">Actualización de Temporada</h2>
+                        <p style="color: #555;">Se han filtrado nuevas mecánicas multiplataforma y actualizaciones de servidores para mejorar la latencia en partidas competitivas.</p>
                     </div>
                 </div>
             </section>
 
+            <section id="mejores" class="view-section d-none"><h1 class="section-title">Mejores Juegos</h1><p>Próximamente...</p></section>
+            <section id="menos" class="view-section d-none"><h1 class="section-title">Menos populares</h1><p>Próximamente...</p></section>
+            <section id="favoritos" class="view-section d-none"><h1 class="section-title">Favoritos</h1><p>Próximamente...</p></section>
+
         </main>
     </div>
 
-    <script type="module" src="js/firebase-config.js"></script>
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="./js/firebase-config.js"></script>
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
