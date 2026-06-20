@@ -3,79 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunidad Gamer - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .sidebar { background-color: #a0e1eb; min-height: 100vh; }
-        .nav-btn { cursor: pointer; border-radius: 8px; font-weight: bold; }
-        .nav-btn:hover, .nav-btn.active { background-color: rgba(255,255,255,0.5); }
-        .game-card img { height: 200px; object-fit: cover; }
-        .chat-box { height: 400px; overflow-y: auto; background-color: #f8f9fa; }
-    </style>
+    <title>Dashboard - Comunidad Gamer</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-light">
-
-<div class="d-flex">
-    <aside class="sidebar p-3" style="width: 250px;">
-        <h4 class="fw-bold mb-4">Bienvenido <br><span id="userNameDisplay" class="text-primary">Usuario</span></h4>
+<body>
+    <div class="app-layout">
         
-        <h6 class="text-muted text-uppercase mt-4">Descubrir</h6>
-        <ul class="nav flex-column mb-3">
-            <li class="nav-item p-2 nav-btn active" data-target="vista-inicio">🏠 Inicio</li>
-            <li class="nav-item p-2 nav-btn" data-target="vista-perfil">👤 Perfil</li>
-        </ul>
+        <aside class="sidebar">
+            <h2>Bienvenido <br><span id="navUsername" style="color: #4285f4;">Usuario</span></h2>
+            
+            <div class="nav-group">
+                <h3>Descubrir</h3>
+                <button class="nav-item active" data-target="inicio">🏠 Inicio</button>
+                <button class="nav-item" data-target="perfil">👤 Información del usuario</button>
+            </div>
 
-        <h6 class="text-muted text-uppercase mt-4">Biblioteca</h6>
-        <ul class="nav flex-column">
-            <li class="nav-item p-2 nav-btn" data-target="vista-tendencias">🔥 Tendencias (API)</li>
-            <li class="nav-item p-2 nav-btn" data-target="vista-chat">💬 Chat Global</li>
-        </ul>
-    </aside>
+            <div class="nav-group">
+                <h3>Biblioteca</h3>
+                <button class="nav-item" data-target="mejores">📋 Mejores juegos</button>
+                <button class="nav-item" data-target="tendencias">🔥 Tendencias</button>
+                <button class="nav-item" data-target="menos">➖ Menos populares</button>
+                <button class="nav-item" data-target="favoritos">⭐ Favoritos</button>
+                <button class="nav-item" data-target="amigos">👥 Amigos / Chat</button>
+                <button class="nav-item" data-target="noticias">📰 Noticias</button>
+            </div>
+        </aside>
 
-    <main class="flex-grow-1 p-4">
-        <header class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-4">
-            <span class="badge bg-info text-dark p-2">Información de Usuario</span>
-            <input type="text" class="form-control w-25 rounded-pill" placeholder="Buscar...">
-            <button id="btnCerrarSesion" class="btn btn-primary rounded-pill">Cerrar Sesión</button>
-        </header>
+        <main class="main-area">
+            <header class="topbar">
+                <div class="user-badge">Información de Usuario</div>
+                <input type="text" class="search-input" placeholder="Buscar...">
+                <button id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</button>
+            </header>
 
-        <section id="vista-inicio" class="vista-seccion">
-            <h2 class="fw-bold">Bienvenido a la comunidad</h2>
-            <p class="text-muted">Explora el menú lateral para descubrir juegos y platicar con otros gamers.</p>
+            <section id="inicio" class="view-section">
+                <h1>Los mejores juegos</h1>
+                <p style="color: #666;">Plataforma Play Station</p>
+                <div class="game-grid">
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/b2a/b2a1bc2ccbf1a56673ebf115594b29bb.jpg" alt="Persona 5"><p>Persona 5 Royal</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg" alt="RDR2"><p>Red Dead Redemption 2</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/5ec/5ecac5cb026ec26a56efcc546364e348.jpg" alt="Elden Ring"><p>Elden Ring</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/713/713269608dc8f2f40f5a670a14b2de94.jpg" alt="TLOU"><p>The Last of Us</p></div>
+                </div>
             </section>
 
-        <section id="vista-perfil" class="vista-seccion d-none">
-            <h2 class="fw-bold">Perfil del Usuario</h2>
-            <div class="card p-4 shadow-sm mt-3 w-50">
-                <p><strong>Correo electrónico:</strong> <span id="userEmailDisplay">Cargando...</span></p>
-                <p><strong>Estado:</strong> <span class="badge bg-success">Conectado</span></p>
-            </div>
-        </section>
-
-        <section id="vista-tendencias" class="vista-seccion d-none">
-            <h2 class="fw-bold">Juegos en Tendencia</h2>
-            <p class="text-muted">Datos extraídos en tiempo real.</p>
-            <div class="row mt-3" id="contenedor-juegos">
-                <p>Cargando catálogo...</p>
-            </div>
-        </section>
-
-        <section id="vista-chat" class="vista-seccion d-none">
-            <h2 class="fw-bold">Foro de Discusión en Vivo</h2>
-            <div class="card shadow-sm mt-3">
-                <div class="card-body chat-box" id="caja-mensajes">
-                    </div>
-                <div class="card-footer d-flex">
-                    <input type="text" id="inputMensaje" class="form-control me-2" placeholder="Escribe un mensaje limpio...">
-                    <button id="btnEnviarMensaje" class="btn btn-dark">Enviar</button>
+            <section id="perfil" class="view-section d-none">
+                <h1>Perfil del Usuario</h1>
+                <div style="background: #fff; padding: 30px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom: 15px;">Datos de tu cuenta segura</h3>
+                    <p><strong>Usuario:</strong> <span id="displayUser">Cargando...</span></p>
+                    <p><strong>Correo:</strong> <span id="displayEmail">Cargando...</span></p>
+                    <p><strong>Plataforma Favorita:</strong> PlayStation</p>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-</div>
+            <section id="mejores" class="view-section d-none">
+                <h1>Lo mejor de lo mejor de PlayStation</h1>
+                <div class="game-grid">
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be59.jpg" alt="GoW"><p>God of War</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/214/214b29aeff13a0ae6a70fc4426e85991.jpg" alt="Bloodborne"><p>Bloodborne</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/9aa/9aa42d16d425fa6f179fc9dc2f763647.jpg" alt="Spider-Man"><p>Spider-Man</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/cf4/cf40fb58abe414fd41ac7ce51a826451.jpg" alt="Ghost"><p>Ghost of Tsushima</p></div>
+                </div>
+            </section>
 
-<script type="module" src="js/firebase-config.js"></script>
-<script type="module" src="js/app.js"></script>
+            <section id="tendencias" class="view-section d-none">
+                <h1>Juegos más hablados esta semana</h1>
+                <div class="game-grid">
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg" alt="RDR2"><p>Red Dead Redemption 2</p></div>
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/5ec/5ecac5cb026ec26a56efcc546364e348.jpg" alt="Elden Ring"><p>Elden Ring</p></div>
+                </div>
+            </section>
+
+            <section id="menos" class="view-section d-none">
+                <h1>Los menos jugados o peores</h1>
+                <div class="game-grid">
+                    <div class="game-card"><img src="https://media.rawg.io/media/games/00a/00a12e523f6f1f31f9b0711ee16bb1cf.jpg" alt="Skull and Bones"><p>Skull and Bones</p></div>
+                </div>
+            </section>
+
+            <section id="favoritos" class="view-section d-none">
+                <h1>Tus Favoritos</h1>
+                <p>Aquí aparecerán los juegos que marques con una estrella.</p>
+            </section>
+
+            <section id="amigos" class="view-section d-none">
+                <h1>Foro / Chat Global</h1>
+                <p style="color: #666; margin-bottom: 20px;">Comunícate con la comunidad (Lenguaje moderado activado).</p>
+                
+                <div class="chat-box" id="caja-mensajes">
+                    </div>
+                
+                <div class="chat-input-area">
+                    <input type="text" id="inputMensaje" placeholder="Escribe un mensaje aquí...">
+                    <button id="btnEnviarMensaje">Enviar</button>
+                </div>
+            </section>
+
+            <section id="noticias" class="view-section d-none">
+                <h1>Últimas noticias de videojuegos</h1>
+                <div style="display: flex; gap: 20px; background: #fff; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <img src="https://media.rawg.io/media/games/8d6/8d69eb6c32ed6acfd75f82d6c214bfc7.jpg" alt="Fortnite" style="width: 250px; border-radius: 10px; object-fit: cover;">
+                    <div>
+                        <h2>Nueva Actualización de Fortnite</h2>
+                        <p style="color: #555;">Se han filtrado nuevas skins y modos de juego para la próxima temporada. ¡Prepárate para el evento en vivo!</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
