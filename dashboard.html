@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Comunidad Gamer</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Bienvenido <span id="navUsername">Usuario</span></h2>
+            </div>
+            
+            <div class="nav-group">
+                <h3>Descubrir</h3>
+                <button class="nav-item active" data-target="inicio">🏠 Inicio</button>
+                <button class="nav-item" data-target="perfil">👤 Información del usuario</button>
+            </div>
+
+            <div class="nav-group">
+                <h3>Biblioteca</h3>
+                <button class="nav-item" data-target="mejores">📋 Mejores juegos</button>
+                <button class="nav-item" data-target="tendencias">🔥 Tendencias</button>
+                <button class="nav-item" data-target="menos">➖ Menos populares</button>
+                <button class="nav-item" data-target="favoritos">⭐ Favoritos</button>
+                <button class="nav-item" data-target="amigos">👥 Amigos</button>
+                <button class="nav-item" data-target="noticias">😀 Noticias</button>
+            </div>
+            <div class="sidebar-footer" style="background-image: url('Navigation.png');"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-area">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-pill">
+                    <span class="user-info-badge">Información de Usuario</span>
+                    <input type="text" class="search-input" placeholder="Buscar...">
+                    <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <!-- CONTENEDORES DE SECCIONES -->
+            
+            <!-- 1. Inicio -->
+            <section id="inicio" class="view-section active">
+                <h2>Los mejores juegos</h2>
+                <p class="subtitle">Plataforma Play Station</p>
+                <div class="game-grid">
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="Persona 5"><p>Persona 5 Royal</p></div>
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="RDR2"><p>Red Dead Redemption 2</p></div>
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="Elden Ring"><p>Elden Ring</p></div>
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="TLOU"><p>The Last of Us</p></div>
+                </div>
+                <h2 class="mt-20">Los más esperados</h2>
+                <div class="game-grid">
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="Wolverine"><p>Wolverine</p></div>
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="Batman"><p>LEGO Batman</p></div>
+                </div>
+            </section>
+
+            <!-- 2. Perfil -->
+            <section id="perfil" class="view-section hidden">
+                <h2>Perfil del Usuario</h2>
+                <div class="profile-wrap">
+                    <div class="profile-left">
+                        <img src="Información de Usuario.png" alt="Avatar" class="avatar-lg">
+                        <button class="btn-light">Editar foto de perfil</button>
+                        <button class="btn-light">Editar perfil</button>
+                    </div>
+                    <div class="profile-right">
+                        <div class="info-box">Nombre de Usuario: <span id="displayUser">Usuario</span></div>
+                        <div class="info-box">Correo: <span id="displayEmail">usuario@correo.com</span></div>
+                        <div class="info-box">Plataforma Favorita: PlayStation</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Mejores Juegos -->
+            <section id="mejores" class="view-section hidden">
+                <h2>Lo mejor de lo mejor de PlayStation</h2>
+                <div class="game-grid">
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="GoW"><p>God of War</p></div>
+                    <div class="game-card"><img src="Mejores Juegos.jpg" alt="Bloodborne"><p>Bloodborne</p></div>
+                    <!-- Agrega más según tu boceto -->
+                </div>
+            </section>
+
+            <!-- 4. Tendencias -->
+            <section id="tendencias" class="view-section hidden">
+                <h2>Juegos más hablados esta semana</h2>
+                <div class="game-grid">
+                    <div class="game-card"><img src="Tendencias.jpg" alt="Spiderman"><p>Spider-Man</p></div>
+                    <div class="game-card"><img src="Tendencias.jpg" alt="Ghost"><p>Ghost of Tsushima</p></div>
+                </div>
+            </section>
+
+            <!-- 5. Amigos -->
+            <section id="amigos" class="view-section hidden">
+                <h2>Tus Amigos</h2>
+                <div class="friends-layout">
+                    <div class="friends-recent">
+                        <span class="badge-light">Interacciones recientes</span>
+                        <div class="friend-item">
+                            <img src="Amigos.png" alt="Bartolito" class="avatar-sm">
+                            <div><strong>El Bartolito</strong><br><small>Activo hace 2 min.</small></div>
+                        </div>
+                        <div class="friend-item">
+                            <img src="Amigos.png" alt="Matador" class="avatar-sm">
+                            <div><strong>El Matador</strong><br><small>Activo hace 1 hor.</small></div>
+                        </div>
+                    </div>
+                    <div class="friends-search">
+                        <input type="text" placeholder="Buscar amigos..." class="input-light">
+                        <div class="friend-item mt-20">
+                            <img src="Amigos.png" alt="Linuxero" class="avatar-sm">
+                            <div><strong>El_Linuxero</strong><br><small>Activo hace 2 hor.</small></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Noticias -->
+            <section id="noticias" class="view-section hidden">
+                <h2>Últimas noticias de videojuegos</h2>
+                <div class="news-card">
+                    <img src="Noticias.png" alt="Fortnite">
+                    <div class="news-info">
+                        <h3>Nueva Actualización de Fornite</h3>
+                        <p>Se ha filtrado nuevas skins de fornite y su...</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

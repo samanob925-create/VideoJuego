@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regístrate</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body" style="background-image: url('Registro de Usuario.jpg');">
+    <div class="auth-container">
+        <div class="auth-card register-card">
+            <h2>Regístrate</h2>
+            <p>Ingresa tu correo electrónico para registrarte en este sitio</p>
+            <form id="registerForm">
+                <input type="text" id="reg-username" placeholder="Nombre de Usuario" required>
+                <input type="email" id="reg-email" placeholder="correoelectrónico@dominio.com" required>
+                <input type="password" id="reg-password" placeholder="Ingresa tu contraseña" required>
+                <input type="password" id="reg-confirm" placeholder="Confirme su contraseña" required>
+                
+                <button type="submit" class="btn-dark">Registrarse con correo electrónico</button>
+            </form>
+            <p class="terms">Al hacer clic en Continuar aceptas nuestros Términos de servicio y la Política de privacidad</p>
+        </div>
+    </div>
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/register.js"></script>
+</body>
+</html>
