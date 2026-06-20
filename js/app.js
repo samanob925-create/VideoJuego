@@ -1,93 +1,83 @@
-// Importaciones de Firebase (Asegúrate de que la ruta de firebase-config.js sea correcta)
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-
+// --- 1. SESIÓN ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // Mostrar datos del usuario en la interfaz
         const username = user.email.split('@')[0];
-        
-        // Verificamos que los elementos existan antes de cambiarles el texto
         if(document.getElementById('navUsername')) document.getElementById('navUsername').innerText = username;
         if(document.getElementById('displayUser')) document.getElementById('displayUser').innerText = username;
         if(document.getElementById('displayEmail')) document.getElementById('displayEmail').innerText = user.email;
     } else {
-        // Redirigir al login si no hay sesión activa
         window.location.href = "index.html";
     }
 });
 
-// Cerrar sesión
 const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 if(btnCerrarSesion) {
-    btnCerrarSesion.addEventListener('click', () => {
-        signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
-    });
+    btnCerrarSesion.addEventListener('click', () => { signOut(auth); });
 }
 
+// --- 2. NAVEGACIÓN ---
 const navItems = document.querySelectorAll('.nav-item');
 const sections = document.querySelectorAll('.view-section');
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
-        // Cambiar botón activo
         navItems.forEach(btn => btn.classList.remove('active'));
         item.classList.add('active');
 
-        // Ocultar todas las secciones
         const target = item.getAttribute('data-target');
         sections.forEach(sec => sec.classList.add('d-none'));
         
-        // Mostrar la que seleccionaste
         const seccionObjetivo = document.getElementById(target);
         if(seccionObjetivo) seccionObjetivo.classList.remove('d-none');
 
-        // Disparadores de funciones específicas al entrar a una pestaña
         if (target === 'amigos') inicializarChat();
-        if (target === 'tendencias') cargarJuegos();
+        if (target === 'tendencias') cargarJuegosMultiplataforma();
     });
 });
 
+// --- 3. API DE RAWG (MULTIPLATAFORMA) ---
 let juegosCargados = false;
-const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
+const RAWG_API_KEY = "TU_API_KEY_REAL_AQUI"; // <--- NO OLVIDES PONER TU LLAVE
 
-async function cargarJuegos() {
-    if (juegosCargados) return; // Evita hacer la petición cada vez que cambias de pestaña
+async function cargarJuegosMultiplataforma() {
+    if (juegosCargados) return; 
     
-    const seccionTendencias = document.getElementById('tendencias');
-    if(!seccionTendencias) return;
-    
-    // Buscamos la cuadrícula de juegos dentro de la sección de tendencias
-    const contenedor = seccionTendencias.querySelector('.game-grid');
+    const contenedor = document.getElementById('contenedor-juegos');
     if(!contenedor) return;
 
-    contenedor.innerHTML = '<p style="color: #666; font-weight: bold;">Conectando con la base de datos de RAWG...</p>';
+    contenedor.innerHTML = '<p style="color: #666;">Conectando con RAWG API...</p>';
 
     try {
-        const respuesta = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&page_size=8`);
+        // Pedimos juegos populares, la API trae sus plataformas automáticamente
+        const respuesta = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&page_size=12`);
         const datos = await respuesta.json();
 
-        contenedor.innerHTML = ''; // Limpiamos el mensaje de carga
+        contenedor.innerHTML = ''; 
         datos.results.forEach(juego => {
+            // Extraemos los nombres de las plataformas en las que está el juego (Ej: "PC, Xbox One, PlayStation 5")
+            const plataformasTexto = juego.platforms.map(p => p.platform.name).slice(0, 3).join(', ');
+
             contenedor.innerHTML += `
                 <div class="game-card">
                     <img src="${juego.background_image}" alt="${juego.name}">
-                    <p>${juego.name}</p>
-                    <p style="color: #666; font-size: 0.8rem; margin-top: -5px;">⭐ ${juego.rating}</p>
-                    <button style="width: 100%; padding: 8px; margin-top: 5px; background: #000; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Ver Detalles</button>
+                    <h4>${juego.name}</h4>
+                    <p class="platforms">🎮 ${plataformasTexto}...</p>
+                    <p style="color: #666; font-size: 0.8rem; margin-bottom: 10px;">⭐ Rating: ${juego.rating}</p>
+                    <button class="btn-juego">Ver Especificaciones</button>
                 </div>
             `;
         });
         juegosCargados = true;
     } catch (error) {
-        contenedor.innerHTML = '<p style="color: red; font-weight: bold;">Error al cargar los juegos. Verifica tu API Key.</p>';
-        console.error("Error cargando RAWG:", error);
+        contenedor.innerHTML = '<p style="color: red; font-weight: bold;">Error al cargar. Revisa tu API KEY.</p>';
     }
 }
 
-
+// --- 4. CHAT GLOBAL ---
 let chatIniciado = false;
 
 function inicializarChat() {
@@ -99,7 +89,6 @@ function inicializarChat() {
 
     const q = query(collection(db, "chat_global"), orderBy("timestamp", "asc"));
 
-    // Escuchar mensajes de Firebase
     onSnapshot(q, (snapshot) => {
         cajaMensajes.innerHTML = '';
         snapshot.forEach((doc) => {
@@ -115,11 +104,10 @@ function inicializarChat() {
                 </div>
             `;
         });
-        cajaMensajes.scrollTop = cajaMensajes.scrollHeight; // Auto-scroll hacia abajo
+        cajaMensajes.scrollTop = cajaMensajes.scrollHeight; 
     });
 }
 
-// Filtro de toxicidad (puedes agregar las palabras que necesites)
 function filtrarPalabras(texto) {
     const groserias = ['mierda', 'carajo', 'idiota', 'estupido'];
     let textoFiltrado = texto;
@@ -130,7 +118,6 @@ function filtrarPalabras(texto) {
     return textoFiltrado;
 }
 
-// Enviar mensaje
 const btnEnviarMensaje = document.getElementById('btnEnviarMensaje');
 if(btnEnviarMensaje) {
     btnEnviarMensaje.addEventListener('click', async () => {
@@ -140,7 +127,7 @@ if(btnEnviarMensaje) {
         if (!texto || !auth.currentUser) return;
 
         const textoSeguro = filtrarPalabras(texto);
-        input.value = ''; // Limpiar campo después de enviar
+        input.value = ''; 
 
         try {
             await addDoc(collection(db, "chat_global"), {
@@ -149,7 +136,7 @@ if(btnEnviarMensaje) {
                 timestamp: serverTimestamp()
             });
         } catch (error) {
-            console.error("Error enviando mensaje:", error);
+            console.error(error);
         }
     });
 }
