@@ -8,22 +8,17 @@
 </head>
 <body>
     <div class="app-layout">
-        
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <h2>🎮 GameHub</h2>
                 <span id="navUsername" class="user-name">Usuario</span>
             </div>
-
             <nav class="sidebar-nav">
-                <!-- BIBLIOTECA -->
                 <div class="nav-group">
                     <h3>Biblioteca</h3>
                     <button class="nav-item active" data-target="inicio" data-platform="all">📚 Todas las plataformas</button>
                 </div>
-
-                <!-- PLATAFORMAS -->
                 <div class="nav-group">
                     <h3>Plataformas</h3>
                     <button class="nav-item platform-btn" data-platform="1">🖥️ PC</button>
@@ -33,8 +28,6 @@
                     <button class="nav-item platform-btn" data-platform="6">📱 iOS</button>
                     <button class="nav-item platform-btn" data-platform="7">📱 Android</button>
                 </div>
-
-                <!-- OTROS -->
                 <div class="nav-group">
                     <h3>Otros</h3>
                     <button class="nav-item" data-target="mejores">⭐ Mejores juegos</button>
@@ -47,7 +40,6 @@
             </nav>
         </aside>
 
-        <!-- Área principal -->
         <main class="main-area">
             <!-- Topbar -->
             <header class="topbar">
@@ -59,7 +51,7 @@
                 <button id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</button>
             </header>
 
-            <!-- Sección de Inicio (dinámica) -->
+            <!-- Inicio -->
             <section id="inicio" class="view-section">
                 <div class="section-header">
                     <h1 class="section-title" id="tituloSeccion">Todas las plataformas</h1>
@@ -71,44 +63,40 @@
                 <button id="btnCargarMas" class="btn-load-more">Cargar más juegos</button>
             </section>
 
-            <!-- Otras secciones (ocultas por defecto) -->
+            <!-- Mejores -->
             <section id="mejores" class="view-section d-none">
-                <h1 class="section-title">Mejores juegos</h1>
-                <p>Próximamente...</p>
+                <div class="section-header">
+                    <h1 class="section-title">⭐ Mejores juegos</h1>
+                    <p class="section-subtitle">Los juegos mejor valorados</p>
+                </div>
+                <div class="game-grid" id="contenedor-mejores"></div>
+                <button id="btnCargarMasMejores" class="btn-load-more">Cargar más</button>
             </section>
+
+            <!-- Menos populares -->
             <section id="menos" class="view-section d-none">
-                <h1 class="section-title">Menos populares</h1>
-                <p>Próximamente...</p>
+                <div class="section-header">
+                    <h1 class="section-title">➖ Menos populares</h1>
+                    <p class="section-subtitle">Juegos con menor rating</p>
+                </div>
+                <div class="game-grid" id="contenedor-menos"></div>
+                <button id="btnCargarMasMenos" class="btn-load-more">Cargar más</button>
             </section>
+
+            <!-- Favoritos -->
             <section id="favoritos" class="view-section d-none">
-                <h1 class="section-title">Favoritos</h1>
-                <p>Próximamente...</p>
+                <div class="section-header">
+                    <h1 class="section-title">❤️ Mis favoritos</h1>
+                    <p class="section-subtitle">Tus juegos favoritos</p>
+                </div>
+                <div class="game-grid" id="contenedor-favoritos"></div>
             </section>
+
+            <!-- Amigos / Chat -->
             <section id="amigos" class="view-section d-none">
                 <h1 class="section-title">Amigos y Chat</h1>
-                <div class="friends-container">
-                    <div class="friend-card">
-                        <div class="friend-info">
-                            <div class="friend-avatar" style="background: #e74c3c;">B</div>
-                            <div>
-                                <h4>El Bartolito</h4>
-                                <span style="font-size: 0.8rem; color: #666;">Activo hace 2 min.</span>
-                            </div>
-                        </div>
-                        <button class="btn-add-friend" onclick="alert('Solicitud enviada')">+ Agregar</button>
-                    </div>
-                    <div class="friend-card">
-                        <div class="friend-info">
-                            <div class="friend-avatar" style="background: #2ecc71;">L</div>
-                            <div>
-                                <h4>El_Linuxero</h4>
-                                <span style="font-size: 0.8rem; color: #666;">Activo hace 2 horas</span>
-                            </div>
-                        </div>
-                        <button class="btn-add-friend" onclick="alert('Solicitud enviada')">+ Agregar</button>
-                    </div>
-                </div>
-
+                <h3 style="margin: 20px 0 10px;">Usuarios registrados</h3>
+                <div id="listaUsuarios" class="friends-container"></div>
                 <h3 style="margin: 20px 0 10px;">Foro Global</h3>
                 <div class="chat-box" id="caja-mensajes"></div>
                 <div class="chat-input-area">
@@ -116,16 +104,17 @@
                     <button id="btnEnviarMensaje">Enviar</button>
                 </div>
             </section>
+
+            <!-- Noticias -->
             <section id="noticias" class="view-section d-none">
-                <h1 class="section-title">Noticias</h1>
-                <div style="display: flex; gap: 20px; background: #fff; padding: 20px; border-radius: 12px; margin-top: 20px;">
-                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop" alt="News" style="width: 250px; border-radius: 10px; object-fit: cover;">
-                    <div>
-                        <h2 style="margin-bottom: 10px;">Actualización de Temporada</h2>
-                        <p style="color: #555;">Se han filtrado nuevas mecánicas multiplataforma y actualizaciones de servidores.</p>
-                    </div>
+                <div class="section-header">
+                    <h1 class="section-title">📰 Noticias de videojuegos</h1>
+                    <p class="section-subtitle">Lo último en el mundo gamer</p>
                 </div>
+                <div id="contenedor-noticias" class="noticias-container"></div>
             </section>
+
+            <!-- Perfil -->
             <section id="perfil" class="view-section d-none">
                 <h1 class="section-title">Mi Perfil</h1>
                 <div class="profile-card">
@@ -134,8 +123,24 @@
                     <p><strong>Plataforma Favorita:</strong> Multiplataforma</p>
                 </div>
             </section>
-
         </main>
+    </div>
+
+    <!-- Modal para detalles -->
+    <div id="modalDetalle" class="modal d-none">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="detalleJuego">
+                <h2 id="detalleNombre">Nombre</h2>
+                <img id="detalleImagen" src="" alt="">
+                <p id="detalleDescripcion">Descripción</p>
+                <p id="detalleFecha">Fecha de lanzamiento</p>
+                <p id="detalleRating">Rating</p>
+                <p id="detallePlataformas">Plataformas</p>
+                <p id="detalleDesarrollador">Desarrollador</p>
+                <p id="detalleGeneros">Géneros</p>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="./js/firebase-config.js"></script>
