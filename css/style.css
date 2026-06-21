@@ -31,6 +31,179 @@ body {
     color: var(--text-dark);
 }
 
+/* ============================================
+   PÁGINAS DE AUTENTICACIÓN (Login / Registro)
+   ============================================ */
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, #0b1a2b, #1e3a5f);
+    height: 100vh;
+    margin: 0;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 40px 35px;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.auth-logo {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.auth-card h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.auth-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+}
+
+/* Inputs con íconos */
+.input-group {
+    position: relative;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 18px 14px 48px;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: #f8fafc;
+    font-family: 'Inter', sans-serif;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: #fff;
+}
+
+/* Grupo de reCAPTCHA */
+.recaptcha-group {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 16px;
+}
+
+.recaptcha-group .g-recaptcha {
+    transform: scale(0.95);
+    transform-origin: center;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-submit:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.auth-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auth-links a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.auth-terms {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 18px;
+}
+
+/* Modal de recuperación (pequeño) */
+.modal-small {
+    max-width: 420px !important;
+}
+
+.modal-small h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-small p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+#resetMessage {
+    font-weight: 500;
+}
+
+/* ============================================
+   DASHBOARD (sidebar, topbar, grid, etc.)
+   ============================================ */
+/* ... (todo el código del dashboard que ya tenías) ... */
+
 /* ===== LAYOUT ===== */
 .app-layout {
     display: flex;
@@ -163,7 +336,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--card-bg);
+    background: var(--card_bg);
     padding: 12px 28px;
     border-radius: 60px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
@@ -292,7 +465,7 @@ body {
 }
 
 .game-card {
-    background: var(--card-bg);
+    background: var(--card_bg);
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow);
@@ -431,7 +604,7 @@ body {
 
 /* ===== PERFIL ===== */
 .profile-card {
-    background: var(--card-bg);
+    background: var(--card_bg);
     padding: 36px 40px;
     border-radius: var(--radius);
     max-width: 520px;
@@ -474,7 +647,7 @@ body {
 }
 
 .friend-card {
-    background: var(--card-bg);
+    background: var(--card_bg);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -532,7 +705,7 @@ body {
 
 /* ===== CHAT ===== */
 .chat-box {
-    background: var(--card-bg);
+    background: var(--card_bg);
     height: 300px;
     border-radius: var(--radius);
     padding: 20px;
@@ -623,7 +796,7 @@ body {
 }
 
 .modal-content {
-    background: var(--card-bg);
+    background: var(--card_bg);
     border-radius: var(--radius);
     max-width: 600px;
     width: 92%;
@@ -680,7 +853,7 @@ body {
 }
 
 .noticia-card {
-    background: var(--card-bg);
+    background: var(--card_bg);
     padding: 20px 24px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -817,5 +990,8 @@ body {
     }
     .modal-content {
         padding: 20px;
+    }
+    .recaptcha-group .g-recaptcha {
+        transform: scale(0.85);
     }
 }
