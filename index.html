@@ -4,32 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido - Iniciar Sesión</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body class="auth-body">
+
     <div class="auth-container">
         <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-gamepad"></i>
+            </div>
             <h2>Bienvenido</h2>
             <p class="auth-subtitle">Inicia sesión para continuar</p>
+
             <form id="loginForm">
                 <div class="input-group">
+                    <i class="fas fa-envelope input-icon"></i>
                     <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
                 </div>
+
                 <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
                     <input type="password" id="loginPassword" placeholder="Contraseña" required>
                 </div>
-                <div class="input-group checkbox-group">
-                    <input type="checkbox" id="robotCheck" required>
-                    <label for="robotCheck">No soy un robot</label>
+
+                <!-- reCAPTCHA real -->
+                <div class="input-group recaptcha-group">
+                    <div class="g-recaptcha" data-sitekey="TU_SITE_KEY_AQUI"></div>
+                    <!-- Reemplaza TU_SITE_KEY_AQUI con tu clave de sitio de Google reCAPTCHA -->
                 </div>
-                <button type="submit" class="btn-submit">Iniciar sesión</button>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </button>
             </form>
+
             <div class="auth-links">
-                <a href="registro.html">Crear cuenta</a>
-                <a href="#">¿Olvidaste tu contraseña?</a>
+                <a href="registro.html"><i class="fas fa-user-plus"></i> Crear cuenta</a>
+                <a href="#" id="btnForgotPassword"><i class="fas fa-key"></i> ¿Olvidaste tu contraseña?</a>
             </div>
         </div>
     </div>
+
+    <!-- Modal para recuperar contraseña -->
+    <div id="modalRecuperar" class="modal d-none">
+        <div class="modal-content modal-small">
+            <span class="modal-close" id="closeModalRecuperar">&times;</span>
+            <h2><i class="fas fa-key"></i> Recuperar contraseña</h2>
+            <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+            <form id="resetForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="resetEmail" placeholder="Correo electrónico" required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Enviar enlace
+                </button>
+            </form>
+            <p id="resetMessage" style="margin-top: 12px; font-size: 0.9rem; color: #28a745;"></p>
+        </div>
+    </div>
+
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/auth.js"></script>
 </body>
