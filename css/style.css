@@ -1,79 +1,588 @@
+/* ===== RESET Y VARIABLES ===== */
 :root {
-    --bg-sidebar: #a0e1eb;
-    --bg-main: #f4f6fa;
-    --text-dark: #333;
+    --bg-sidebar: #1a2634;
+    --bg-main: #f0f2f5;
+    --text-light: #e8edf2;
+    --text-dark: #1e2a3a;
     --btn-blue: #4285f4;
+    --btn-hover: #2b6ed7;
+    --card-bg: #ffffff;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --radius: 16px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
 
-body { background-color: var(--bg-main); height: 100vh; overflow: hidden; }
+body {
+    background-color: var(--bg-main);
+    height: 100vh;
+    overflow: hidden;
+}
 
-/* --- Layout Principal --- */
-.app-layout { display: flex; height: 100vh; }
+/* ===== PÁGINAS DE AUTENTICACIÓN ===== */
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, #0b1a2b, #1e3a5f);
+    height: 100vh;
+    margin: 0;
+}
 
-/* --- Menú Lateral --- */
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 40px 35px;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.auth-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.auth-card .input-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #dce0e6;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: 0.2s;
+    background: #f8fafc;
+}
+
+.auth-card input:focus {
+    border-color: var(--btn-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--btn-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.3);
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.auth-links a {
+    color: var(--btn-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-terms {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 18px;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.app-layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
 .sidebar {
-    width: 260px; background-color: var(--bg-sidebar); padding: 20px;
-    display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid #8ac8d1;
+    width: 260px;
+    background: var(--bg-sidebar);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
     overflow-y: auto;
+    color: var(--text-light);
 }
-.sidebar h2 { font-size: 1.2rem; color: #000; margin-bottom: 25px; }
-.nav-group h3 { font-size: 0.85rem; color: #555; margin: 15px 0 10px 0; font-weight: bold; text-transform: uppercase;}
+
+.sidebar-brand {
+    margin-bottom: 30px;
+}
+
+.sidebar-brand h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.sidebar-brand .user-name {
+    display: block;
+    font-size: 0.95rem;
+    color: #a0c4e8;
+    margin-top: 4px;
+}
+
+.sidebar-nav {
+    flex: 1;
+}
+
+.nav-group {
+    margin-bottom: 20px;
+}
+
+.nav-group h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8899aa;
+    margin-bottom: 8px;
+}
 
 .nav-item {
-    width: 100%; padding: 12px 15px; margin-bottom: 5px; border: none; background: transparent;
-    border-radius: 8px; text-align: left; cursor: pointer; font-weight: bold; color: var(--text-dark);
-    transition: 0.2s; font-size: 0.95rem;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 4px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 500;
+    color: #c8d6e5;
+    transition: 0.2s;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.nav-item.active, .nav-item:hover { background-color: rgba(255,255,255,0.6); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-/* --- Área Principal --- */
-.main-area { flex-grow: 1; padding: 30px; overflow-y: auto; }
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
 
-/* --- Barra Superior --- */
+.nav-item.active {
+    background: rgba(66, 133, 244, 0.25);
+    color: #fff;
+    box-shadow: inset 3px 0 0 var(--btn-blue);
+}
+
+/* ===== ÁREA PRINCIPAL ===== */
+.main-area {
+    flex: 1;
+    padding: 30px 35px;
+    overflow-y: auto;
+    background: var(--bg-main);
+}
+
+/* ===== TOPBAR ===== */
 .topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    background-color: #dbecee; padding: 10px 20px; border-radius: 30px; margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 10px 24px;
+    border-radius: 50px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    margin-bottom: 30px;
 }
-.user-badge { background: #e8f3f5; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;}
-.search-input { border: none; padding: 10px 20px; border-radius: 20px; width: 300px; outline: none; }
-.btn-logout { background: var(--btn-blue); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold;}
 
-/* --- Secciones y Tarjetas --- */
-.view-section { animation: fadeIn 0.3s; }
-.d-none { display: none !important; }
-.section-title { font-size: 1.8rem; margin-bottom: 5px; color: #000; }
-.section-subtitle { color: #666; margin-bottom: 20px; font-size: 0.95rem; }
+.user-badge {
+    font-weight: 600;
+    color: var(--text-dark);
+}
 
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-.game-card { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; transition: transform 0.2s; }
-.game-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-.game-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
-.game-card h4 { font-size: 1rem; color: #000; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.game-card .platforms { font-size: 0.75rem; color: #666; margin-bottom: 10px; font-weight: bold; }
-.game-card .btn-juego { width: 100%; padding: 8px; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f4f8;
+    border-radius: 40px;
+    padding: 4px 8px 4px 18px;
+}
 
-/* --- Lista de Amigos y Chat --- */
-.friends-container { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
-.friend-card { background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 15px; border-radius: 12px; width: calc(50% - 10px); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.friend-info { display: flex; align-items: center; gap: 15px; }
-.friend-avatar { width: 50px; height: 50px; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; color: #fff; }
-.btn-add-friend { background: var(--btn-blue); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+.search-input {
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    width: 220px;
+    font-size: 0.95rem;
+    outline: none;
+}
 
-.chat-box { background: #fff; height: 350px; border-radius: 12px; padding: 20px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #eee; }
-.chat-input-area { display: flex; gap: 10px; }
-.chat-input-area input { flex-grow: 1; padding: 15px; border: 1px solid #ddd; border-radius: 12px; outline: none; }
-.chat-input-area button { padding: 15px 30px; background: #000; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+.btn-search {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #555;
+    padding: 6px 10px;
+    border-radius: 30px;
+    transition: 0.2s;
+}
 
-.msg-bubble { background: #f0f2f5; padding: 10px 15px; border-radius: 15px; display: inline-block; max-width: 70%; margin-bottom: 10px; }
-.msg-mine { background: #a0e1eb; text-align: right; margin-left: auto; display: block; }
-.msg-author { font-size: 0.8rem; font-weight: bold; color: #555; display: block; margin-bottom: 3px; }
+.btn-search:hover {
+    background: #e2e6ed;
+}
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.btn-logout {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 22px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-/* Estilo del botón cargar más */
-#btnCargarMas {
+.btn-logout:hover {
+    background: #c0392b;
+    transform: scale(1.02);
+}
+
+/* ===== SECCIONES ===== */
+.view-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.section-header {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.section-subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-top: 4px;
+}
+
+/* ===== GRID DE JUEGOS ===== */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.game-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.game-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+.game-card-content {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-card .platforms {
+    font-size: 0.75rem;
+    color: #777;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.game-card .rating {
+    font-size: 0.85rem;
+    color: #f1c40f;
+    margin-bottom: 6px;
+}
+
+.game-card .genres {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 10px;
+    flex: 1;
+}
+
+.btn-juego {
+    width: 100%;
+    padding: 10px;
+    background: var(--btn-blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-juego:hover {
+    background: var(--btn-hover);
+}
+
+/* ===== BOTÓN CARGAR MÁS ===== */
+.btn-load-more {
+    display: block;
     margin: 30px auto 10px;
-    display: none;
+    padding: 14px 50px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.btn-load-more:hover {
+    background: #1a2634;
+    transform: scale(1.02);
+}
+
+/* ===== PERFIL ===== */
+.profile-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: var(--radius);
+    max-width: 500px;
+    box-shadow: var(--shadow);
+}
+
+.profile-card p {
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+/* ===== AMIGOS Y CHAT ===== */
+.friends-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.friend-card {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    width: calc(50% - 10px);
+    box-shadow: var(--shadow);
+}
+
+.friend-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.friend-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.btn-add-friend {
+    background: var(--btn-blue);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-add-friend:hover {
+    background: var(--btn-hover);
+}
+
+.chat-box {
+    background: #fff;
+    height: 320px;
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 12px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.chat-input-area button {
+    padding: 14px 30px;
+    background: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.chat-input-area button:hover {
+    background: #1a2634;
+}
+
+.msg-bubble {
+    background: #f0f2f5;
+    padding: 10px 16px;
+    border-radius: 18px;
+    display: inline-block;
+    max-width: 70%;
+    margin-bottom: 10px;
+}
+
+.msg-mine {
+    background: #d4e3fd;
+    margin-left: auto;
+    display: block;
+}
+
+.msg-author {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #444;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        padding: 16px;
+    }
+    .main-area {
+        padding: 20px;
+    }
+    .game-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    .friend-card {
+        width: 100%;
+    }
+    .topbar {
+        flex-wrap: wrap;
+        gap: 10px;
+        border-radius: 20px;
+        padding: 12px 18px;
+    }
+    .search-input {
+        width: 140px;
+    }
 }
