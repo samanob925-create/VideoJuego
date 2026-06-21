@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_12345abcde"; // ¡Cambia por tu clave de NewsData.io!
+const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // ¡Cambia por tu clave de NewsData.io!
 
 // ===== ESTADO =====
 let currentPlatform = "all";
