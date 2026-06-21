@@ -586,3 +586,9 @@ body {
         width: 140px;
     }
 }
+.loading-text {
+    text-align: center;
+    color: #888;
+    font-size: 1.1rem;
+    padding: 40px 0;
+}
