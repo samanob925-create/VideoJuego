@@ -41,7 +41,7 @@ navItems.forEach(item => {
 
 // --- 3. API DE RAWG (MULTIPLATAFORMA) ---
 let juegosCargados = false;
-const RAWG_API_KEY = "TU_API_KEY_REAL_AQUI"; // <--- NO OLVIDES PONER TU LLAVE
+const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed"; // <--- NO OLVIDES PONER TU LLAVE
 
 async function cargarJuegosMultiplataforma() {
     if (juegosCargados) return; 
