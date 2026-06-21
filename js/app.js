@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646";
+const NEWS_API_KEY = "pub_12345abcde"; // Cambia por tu clave de NewsData.io
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -24,7 +24,7 @@ const tituloSeccion = document.getElementById('tituloSeccion');
 const subtituloSeccion = document.getElementById('subtituloSeccion');
 const btnCargarMas = document.getElementById('btnCargarMas');
 const searchInput = document.getElementById('searchInput');
-const btnBuscar = document.getElementById('btnBuscar');
+const btnBuscar = document.getElementById('btnBuscar'); // no existe en el HTML, lo crearemos
 const modal = document.getElementById('modalDetalle');
 const modalClose = document.querySelector('.modal-close');
 
@@ -33,10 +33,14 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         const username = user.email.split('@')[0];
-        document.getElementById('navUsername').innerText = username;
-        document.getElementById('displayUserShort').innerText = username;
-        document.getElementById('displayUser').innerText = username;
-        document.getElementById('displayEmail').innerText = user.email;
+        const navUsername = document.getElementById('navUsername');
+        if (navUsername) navUsername.innerText = username;
+        const shortUser = document.getElementById('displayUserShort');
+        if (shortUser) shortUser.innerText = username;
+        const displayUser = document.getElementById('displayUser');
+        if (displayUser) displayUser.innerText = username;
+        const displayEmail = document.getElementById('displayEmail');
+        if (displayEmail) displayEmail.innerText = user.email;
         cargarUsuarios();
     } else {
         window.location.href = "index.html";
@@ -98,7 +102,8 @@ platformBtns.forEach(btn => {
         currentPlatform = platform;
 
         sections.forEach(sec => sec.classList.add('d-none'));
-        document.getElementById('inicio').classList.remove('d-none');
+        const inicio = document.getElementById('inicio');
+        if (inicio) inicio.classList.remove('d-none');
 
         cargarJuegos(platform, 1, true);
     });
@@ -113,8 +118,8 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         currentPage = 1;
         hasMore = true;
         allGames = [];
-        contenedor.innerHTML = '<p class="loading-text">Cargando juegos...</p>';
-        btnCargarMas.style.display = 'none';
+        if (contenedor) contenedor.innerHTML = '<p class="loading-text">Cargando juegos...</p>';
+        if (btnCargarMas) btnCargarMas.style.display = 'none';
     }
 
     let url = `${BASE_URL}?key=${RAWG_API_KEY}&page_size=24&page=${page}`;
@@ -126,8 +131,8 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         '1': 'PC', '2': 'PlayStation', '3': 'Xbox', '4': 'Nintendo',
         '6': 'iOS', '7': 'Android', 'all': 'Todas las plataformas'
     };
-    tituloSeccion.textContent = `Juegos de ${platformNames[platform] || 'Plataforma'}`;
-    subtituloSeccion.textContent = `Los títulos más populares`;
+    if (tituloSeccion) tituloSeccion.textContent = `Juegos de ${platformNames[platform] || 'Plataforma'}`;
+    if (subtituloSeccion) subtituloSeccion.textContent = 'Los títulos más populares';
 
     try {
         const resp = await fetch(url);
@@ -135,8 +140,8 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         const datos = await resp.json();
 
         if (!datos.results || datos.results.length === 0) {
-            contenedor.innerHTML = '<p style="color:#888;">No se encontraron juegos para esta plataforma.</p>';
-            btnCargarMas.style.display = 'none';
+            if (contenedor) contenedor.innerHTML = '<p style="color:#888;">No se encontraron juegos para esta plataforma.</p>';
+            if (btnCargarMas) btnCargarMas.style.display = 'none';
             hasMore = false;
             isLoading = false;
             return;
@@ -147,12 +152,12 @@ async function cargarJuegos(platform, page = 1, reset = false) {
 
         renderGames(allGames, contenedor);
         hasMore = datos.next !== null;
-        btnCargarMas.style.display = hasMore ? 'block' : 'none';
+        if (btnCargarMas) btnCargarMas.style.display = hasMore ? 'block' : 'none';
         currentPage = page;
     } catch (error) {
-        console.error(error);
-        contenedor.innerHTML = `<p style="color:#e74c3c;">Error: ${error.message}</p>`;
-        btnCargarMas.style.display = 'none';
+        console.error('Error cargando juegos:', error);
+        if (contenedor) contenedor.innerHTML = `<p style="color:#e74c3c;">Error: ${error.message}</p>`;
+        if (btnCargarMas) btnCargarMas.style.display = 'none';
     } finally {
         isLoading = false;
     }
@@ -176,42 +181,28 @@ function renderGames(games, container) {
             <img src="${juego.background_image || 'https://via.placeholder.com/300x160?text=Sin+imagen'}" alt="${juego.name}">
             <div class="game-card-content">
                 <h4>${juego.name}</h4>
-                <p class="platforms"><i class="fas fa-gamepad" style="margin-right: 4px;"></i> ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
-                <p class="rating"><i class="fas fa-star" style="color: #f1c40f; margin-right: 4px;"></i> ${juego.rating} / 5</p>
+                <p class="platforms"><i class="fas fa-gamepad" style="margin-right:4px;"></i> ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
+                <p class="rating"><i class="fas fa-star" style="color:#f1c40f;"></i> ${juego.rating} / 5</p>
                 <p class="genres">${generos}</p>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle" style="margin-right: 6px;"></i> Ver detalles</button>
-                    <button class="btn-fav" data-id="${juego.id}" data-nombre="${juego.name}" data-imagen="${juego.background_image || ''}"><i class="far fa-heart"></i></button>
+                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle"></i> Ver detalles</button>
+                    <button class="btn-fav" data-id="${juego.id}" data-nombre="${juego.name}" data-imagen="${juego.background_image || ''}"><i class="fas fa-heart"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(card);
     });
 
-    // Actualizar estado de favoritos
+    // Añadir eventos a los botones de favoritos
     container.querySelectorAll('.btn-fav').forEach(async (btn) => {
         const id = btn.dataset.id;
         const esFav = await esFavorito(id);
-        const icon = btn.querySelector('i');
-        if (esFav) {
-            icon.className = 'fas fa-heart';
-            icon.style.color = '#e74c3c';
-        } else {
-            icon.className = 'far fa-heart';
-            icon.style.color = 'inherit';
-        }
+        btn.style.color = esFav ? '#e74c3c' : 'inherit';
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             await toggleFavorito(id, btn.dataset.nombre, btn.dataset.imagen);
             const esFav2 = await esFavorito(id);
-            const icon2 = btn.querySelector('i');
-            if (esFav2) {
-                icon2.className = 'fas fa-heart';
-                icon2.style.color = '#e74c3c';
-            } else {
-                icon2.className = 'far fa-heart';
-                icon2.style.color = 'inherit';
-            }
+            btn.style.color = esFav2 ? '#e74c3c' : 'inherit';
         });
     });
 }
@@ -220,21 +211,31 @@ function renderGames(games, container) {
 function buscarJuegos(termino) {
     if (!termino.trim()) {
         renderGames(allGames, contenedor);
-        btnCargarMas.style.display = hasMore ? 'block' : 'none';
+        if (btnCargarMas) btnCargarMas.style.display = hasMore ? 'block' : 'none';
         return;
     }
     const filtrados = allGames.filter(juego =>
         juego.name.toLowerCase().includes(termino.toLowerCase())
     );
     renderGames(filtrados, contenedor);
-    btnCargarMas.style.display = 'none';
+    if (btnCargarMas) btnCargarMas.style.display = 'none';
 }
-searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') buscarJuegos(searchInput.value); });
-btnBuscar.addEventListener('click', () => buscarJuegos(searchInput.value));
+if (searchInput) {
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') buscarJuegos(searchInput.value);
+    });
+}
+// Si existe btnBuscar (no en el HTML actual, pero lo dejamos)
+if (btnBuscar) {
+    btnBuscar.addEventListener('click', () => buscarJuegos(searchInput.value));
+}
 
-btnCargarMas.addEventListener('click', () => {
-    if (!isLoading && hasMore) cargarJuegos(currentPlatform, currentPage + 1, false);
-});
+// ===== BOTÓN CARGAR MÁS =====
+if (btnCargarMas) {
+    btnCargarMas.addEventListener('click', () => {
+        if (!isLoading && hasMore) cargarJuegos(currentPlatform, currentPage + 1, false);
+    });
+}
 
 // ===== MEJORES =====
 let mejoresPage = 1, mejoresHasMore = true;
@@ -247,8 +248,8 @@ async function cargarMejores(page = 1, reset = false) {
     if (reset) {
         mejoresPage = 1;
         mejoresHasMore = true;
-        contenedorMejores.innerHTML = '<p class="loading-text">Cargando...</p>';
-        btnCargarMasMejores.style.display = 'none';
+        if (contenedorMejores) contenedorMejores.innerHTML = '<p class="loading-text">Cargando...</p>';
+        if (btnCargarMasMejores) btnCargarMasMejores.style.display = 'none';
     }
     const url = `${BASE_URL}?key=${RAWG_API_KEY}&ordering=-rating&page_size=24&page=${page}`;
     try {
@@ -256,23 +257,25 @@ async function cargarMejores(page = 1, reset = false) {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const datos = await resp.json();
         if (!datos.results || datos.results.length === 0) {
-            contenedorMejores.innerHTML = '<p>No hay juegos.</p>';
-            btnCargarMasMejores.style.display = 'none';
+            if (contenedorMejores) contenedorMejores.innerHTML = '<p>No hay juegos.</p>';
+            if (btnCargarMasMejores) btnCargarMasMejores.style.display = 'none';
             mejoresHasMore = false;
             isLoading = false;
             return;
         }
         renderGames(datos.results, contenedorMejores);
         mejoresHasMore = datos.next !== null;
-        btnCargarMasMejores.style.display = mejoresHasMore ? 'block' : 'none';
+        if (btnCargarMasMejores) btnCargarMasMejores.style.display = mejoresHasMore ? 'block' : 'none';
         mejoresPage = page;
     } catch (error) {
-        contenedorMejores.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        if (contenedorMejores) contenedorMejores.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
     } finally { isLoading = false; }
 }
-btnCargarMasMejores.addEventListener('click', () => {
-    if (!isLoading && mejoresHasMore) cargarMejores(mejoresPage + 1, false);
-});
+if (btnCargarMasMejores) {
+    btnCargarMasMejores.addEventListener('click', () => {
+        if (!isLoading && mejoresHasMore) cargarMejores(mejoresPage + 1, false);
+    });
+}
 
 // ===== MENOS POPULARES =====
 let menosPage = 1, menosHasMore = true;
@@ -285,8 +288,8 @@ async function cargarMenos(page = 1, reset = false) {
     if (reset) {
         menosPage = 1;
         menosHasMore = true;
-        contenedorMenos.innerHTML = '<p class="loading-text">Cargando...</p>';
-        btnCargarMasMenos.style.display = 'none';
+        if (contenedorMenos) contenedorMenos.innerHTML = '<p class="loading-text">Cargando...</p>';
+        if (btnCargarMasMenos) btnCargarMasMenos.style.display = 'none';
     }
     const url = `${BASE_URL}?key=${RAWG_API_KEY}&ordering=rating&page_size=24&page=${page}`;
     try {
@@ -294,53 +297,67 @@ async function cargarMenos(page = 1, reset = false) {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const datos = await resp.json();
         if (!datos.results || datos.results.length === 0) {
-            contenedorMenos.innerHTML = '<p>No hay juegos.</p>';
-            btnCargarMasMenos.style.display = 'none';
+            if (contenedorMenos) contenedorMenos.innerHTML = '<p>No hay juegos.</p>';
+            if (btnCargarMasMenos) btnCargarMasMenos.style.display = 'none';
             menosHasMore = false;
             isLoading = false;
             return;
         }
         renderGames(datos.results, contenedorMenos);
         menosHasMore = datos.next !== null;
-        btnCargarMasMenos.style.display = menosHasMore ? 'block' : 'none';
+        if (btnCargarMasMenos) btnCargarMasMenos.style.display = menosHasMore ? 'block' : 'none';
         menosPage = page;
     } catch (error) {
-        contenedorMenos.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        if (contenedorMenos) contenedorMenos.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
     } finally { isLoading = false; }
 }
-btnCargarMasMenos.addEventListener('click', () => {
-    if (!isLoading && menosHasMore) cargarMenos(menosPage + 1, false);
-});
+if (btnCargarMasMenos) {
+    btnCargarMasMenos.addEventListener('click', () => {
+        if (!isLoading && menosHasMore) cargarMenos(menosPage + 1, false);
+    });
+}
 
 // ===== FAVORITOS =====
 async function esFavorito(juegoId) {
     if (!currentUser) return false;
-    const q = query(collection(db, "favoritos"), where("uid", "==", currentUser.uid), where("juegoId", "==", juegoId));
-    const snap = await getDocs(q);
-    return !snap.empty;
+    try {
+        const q = query(collection(db, "favoritos"), where("uid", "==", currentUser.uid), where("juegoId", "==", juegoId));
+        const snap = await getDocs(q);
+        return !snap.empty;
+    } catch (error) {
+        console.error('Error verificando favorito:', error);
+        return false;
+    }
 }
 
 async function toggleFavorito(juegoId, nombre, imagen) {
     if (!currentUser) return;
-    const q = query(collection(db, "favoritos"), where("uid", "==", currentUser.uid), where("juegoId", "==", juegoId));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-        await addDoc(collection(db, "favoritos"), {
-            uid: currentUser.uid,
-            juegoId: juegoId,
-            nombre: nombre,
-            imagen: imagen,
-            fecha: serverTimestamp()
-        });
-    } else {
-        snap.forEach(async (doc) => await deleteDoc(doc.ref));
+    try {
+        const q = query(collection(db, "favoritos"), where("uid", "==", currentUser.uid), where("juegoId", "==", juegoId));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            await addDoc(collection(db, "favoritos"), {
+                uid: currentUser.uid,
+                juegoId: juegoId,
+                nombre: nombre,
+                imagen: imagen,
+                fecha: serverTimestamp()
+            });
+        } else {
+            snap.forEach(async (doc) => await deleteDoc(doc.ref));
+        }
+        // Refrescar favoritos si estamos en esa sección
+        const seccionFav = document.getElementById('favoritos');
+        if (seccionFav && !seccionFav.classList.contains('d-none')) cargarFavoritos();
+    } catch (error) {
+        console.error('Error al cambiar favorito:', error);
+        alert('Error al guardar favorito. Verifica permisos de Firestore.');
     }
-    const seccionFav = document.getElementById('favoritos');
-    if (!seccionFav.classList.contains('d-none')) cargarFavoritos();
 }
 
 async function cargarFavoritos() {
     const contenedor = document.getElementById('contenedor-favoritos');
+    if (!contenedor) return;
     if (!currentUser) {
         contenedor.innerHTML = '<p>Inicia sesión para ver favoritos.</p>';
         return;
@@ -366,19 +383,19 @@ async function cargarFavoritos() {
                 <img src="${juego.background_image || 'https://via.placeholder.com/300x160?text=Sin+imagen'}" alt="${juego.name}">
                 <div class="game-card-content">
                     <h4>${juego.name}</h4>
-                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle" style="margin-right: 6px;"></i> Ver detalles</button>
-                    <button class="btn-fav" style="color:#e74c3c;" onclick="toggleFavorito('${juego.id}', '${juego.name}', '${juego.background_image}')"><i class="fas fa-heart" style="margin-right: 6px;"></i> Quitar</button>
+                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle"></i> Ver detalles</button>
+                    <button class="btn-fav" style="color:#e74c3c;" onclick="toggleFavorito('${juego.id}', '${juego.name}', '${juego.background_image}')"><i class="fas fa-heart"></i> Quitar</button>
                 </div>
             `;
             contenedor.appendChild(card);
         });
     } catch (error) {
         console.error(error);
-        contenedor.innerHTML = `<p style="color:red;">Error al cargar favoritos.</p>`;
+        contenedor.innerHTML = `<p style="color:red;">Error al cargar favoritos: ${error.message}</p>`;
     }
 }
 
-// ===== DETALLE (Modal) =====
+// ===== DETALLE (global) =====
 window.verDetalle = async function(juegoId) {
     try {
         const url = `https://api.rawg.io/api/games/${juegoId}?key=${RAWG_API_KEY}`;
@@ -401,12 +418,17 @@ window.verDetalle = async function(juegoId) {
     }
 };
 
-modalClose.addEventListener('click', () => modal.classList.add('d-none'));
-modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('d-none'); });
+if (modalClose) {
+    modalClose.addEventListener('click', () => modal.classList.add('d-none'));
+}
+if (modal) {
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('d-none'); });
+}
 
 // ===== NOTICIAS =====
 async function cargarNoticias() {
     const contenedor = document.getElementById('contenedor-noticias');
+    if (!contenedor) return;
     contenedor.innerHTML = '<p class="loading-text">Cargando noticias...</p>';
     try {
         const url = `https://newsdata.io/api/1/news?apikey=${NEWS_API_KEY}&q=videojuegos&language=es&size=10`;
@@ -467,7 +489,7 @@ async function cargarUsuarios() {
                         <span style="font-size:0.8rem; color:#666;">${user.email}</span>
                     </div>
                 </div>
-                <button class="btn-add-friend" onclick="alert('Solicitud enviada a ${user.nombre}')"><i class="fas fa-user-plus" style="margin-right: 6px;"></i> Agregar</button>
+                <button class="btn-add-friend" onclick="alert('Solicitud enviada a ${user.nombre}')"><i class="fas fa-user-plus"></i> Agregar</button>
             `;
             contenedor.appendChild(card);
         });
@@ -513,22 +535,26 @@ function filtrarPalabras(texto) {
     return textoFiltrado;
 }
 
-document.getElementById('btnEnviarMensaje').addEventListener('click', async () => {
-    const input = document.getElementById('inputMensaje');
-    const texto = input.value.trim();
-    if (!texto || !auth.currentUser) return;
-    const textoSeguro = filtrarPalabras(texto);
-    input.value = '';
-    try {
-        await addDoc(collection(db, "chat_global"), {
-            texto: textoSeguro,
-            usuario: auth.currentUser.email,
-            timestamp: serverTimestamp()
-        });
-    } catch (error) {
-        console.error(error);
-    }
-});
+const btnEnviar = document.getElementById('btnEnviarMensaje');
+if (btnEnviar) {
+    btnEnviar.addEventListener('click', async () => {
+        const input = document.getElementById('inputMensaje');
+        const texto = input.value.trim();
+        if (!texto || !auth.currentUser) return;
+        const textoSeguro = filtrarPalabras(texto);
+        input.value = '';
+        try {
+            await addDoc(collection(db, "chat_global"), {
+                texto: textoSeguro,
+                usuario: auth.currentUser.email,
+                timestamp: serverTimestamp()
+            });
+        } catch (error) {
+            console.error('Error al enviar mensaje:', error);
+            alert('Error al enviar mensaje. Verifica permisos de Firestore.');
+        }
+    });
+}
 
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
