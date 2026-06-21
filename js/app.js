@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // Cambia por tu clave de NewsData.io
+const NEWS_API_KEY = "pub_12345abcde"; // Cambia por tu clave de NewsData.io
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -24,14 +24,34 @@ const tituloSeccion = document.getElementById('tituloSeccion');
 const subtituloSeccion = document.getElementById('subtituloSeccion');
 const btnCargarMas = document.getElementById('btnCargarMas');
 const searchInput = document.getElementById('searchInput');
-const btnBuscar = document.getElementById('btnBuscar'); // no existe en el HTML, lo crearemos
+const btnBuscar = document.getElementById('btnBuscar');
 const modal = document.getElementById('modalDetalle');
 const modalClose = document.querySelector('.modal-close');
 
-// ===== SESIÓN =====
-onAuthStateChanged(auth, (user) => {
+// ============================================
+// 1. SESIÓN Y SINCRONIZACIÓN CON FIRESTORE
+// ============================================
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
+
+        // --- Sincronizar usuario a Firestore si no existe ---
+        try {
+            const userDocRef = doc(db, "usuarios", user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (!docSnap.exists()) {
+                await setDoc(userDocRef, {
+                    nombre: user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    fechaRegistro: new Date().toISOString()
+                });
+                console.log("Usuario sincronizado a Firestore:", user.email);
+            }
+        } catch (error) {
+            console.error("Error al sincronizar usuario:", error);
+        }
+
+        // Actualizar UI
         const username = user.email.split('@')[0];
         const navUsername = document.getElementById('navUsername');
         if (navUsername) navUsername.innerText = username;
@@ -41,6 +61,8 @@ onAuthStateChanged(auth, (user) => {
         if (displayUser) displayUser.innerText = username;
         const displayEmail = document.getElementById('displayEmail');
         if (displayEmail) displayEmail.innerText = user.email;
+
+        // Cargar lista de usuarios (para amigos)
         cargarUsuarios();
     } else {
         window.location.href = "index.html";
@@ -51,7 +73,9 @@ document.getElementById('btnCerrarSesion').addEventListener('click', () => {
     signOut(auth);
 });
 
-// ===== NAVEGACIÓN =====
+// ============================================
+// 2. NAVEGACIÓN
+// ============================================
 const navItems = document.querySelectorAll('.nav-item');
 const sections = document.querySelectorAll('.view-section');
 
@@ -91,7 +115,9 @@ navItems.forEach(item => {
     });
 });
 
-// ===== BOTONES DE PLATAFORMA =====
+// ============================================
+// 3. BOTONES DE PLATAFORMA
+// ============================================
 const platformBtns = document.querySelectorAll('.platform-btn');
 platformBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -109,7 +135,9 @@ platformBtns.forEach(btn => {
     });
 });
 
-// ===== CARGA DE JUEGOS =====
+// ============================================
+// 4. CARGAR JUEGOS (API RAWG)
+// ============================================
 async function cargarJuegos(platform, page = 1, reset = false) {
     if (isLoading) return;
     isLoading = true;
@@ -163,7 +191,9 @@ async function cargarJuegos(platform, page = 1, reset = false) {
     }
 }
 
-// ===== RENDERIZAR JUEGOS =====
+// ============================================
+// 5. RENDERIZAR JUEGOS
+// ============================================
 function renderGames(games, container) {
     if (!container) return;
     if (!games || games.length === 0) {
@@ -193,7 +223,7 @@ function renderGames(games, container) {
         container.appendChild(card);
     });
 
-    // Añadir eventos a los botones de favoritos
+    // Eventos de favoritos
     container.querySelectorAll('.btn-fav').forEach(async (btn) => {
         const id = btn.dataset.id;
         const esFav = await esFavorito(id);
@@ -207,7 +237,9 @@ function renderGames(games, container) {
     });
 }
 
-// ===== BÚSQUEDA =====
+// ============================================
+// 6. BÚSQUEDA
+// ============================================
 function buscarJuegos(termino) {
     if (!termino.trim()) {
         renderGames(allGames, contenedor);
@@ -225,19 +257,22 @@ if (searchInput) {
         if (e.key === 'Enter') buscarJuegos(searchInput.value);
     });
 }
-// Si existe btnBuscar (no en el HTML actual, pero lo dejamos)
 if (btnBuscar) {
     btnBuscar.addEventListener('click', () => buscarJuegos(searchInput.value));
 }
 
-// ===== BOTÓN CARGAR MÁS =====
+// ============================================
+// 7. BOTÓN CARGAR MÁS
+// ============================================
 if (btnCargarMas) {
     btnCargarMas.addEventListener('click', () => {
         if (!isLoading && hasMore) cargarJuegos(currentPlatform, currentPage + 1, false);
     });
 }
 
-// ===== MEJORES =====
+// ============================================
+// 8. MEJORES Y MENOS POPULARES
+// ============================================
 let mejoresPage = 1, mejoresHasMore = true;
 const contenedorMejores = document.getElementById('contenedor-mejores');
 const btnCargarMasMejores = document.getElementById('btnCargarMasMejores');
@@ -277,7 +312,6 @@ if (btnCargarMasMejores) {
     });
 }
 
-// ===== MENOS POPULARES =====
 let menosPage = 1, menosHasMore = true;
 const contenedorMenos = document.getElementById('contenedor-menos');
 const btnCargarMasMenos = document.getElementById('btnCargarMasMenos');
@@ -317,7 +351,9 @@ if (btnCargarMasMenos) {
     });
 }
 
-// ===== FAVORITOS =====
+// ============================================
+// 9. FAVORITOS
+// ============================================
 async function esFavorito(juegoId) {
     if (!currentUser) return false;
     try {
@@ -346,7 +382,6 @@ async function toggleFavorito(juegoId, nombre, imagen) {
         } else {
             snap.forEach(async (doc) => await deleteDoc(doc.ref));
         }
-        // Refrescar favoritos si estamos en esa sección
         const seccionFav = document.getElementById('favoritos');
         if (seccionFav && !seccionFav.classList.contains('d-none')) cargarFavoritos();
     } catch (error) {
@@ -395,7 +430,9 @@ async function cargarFavoritos() {
     }
 }
 
-// ===== DETALLE (global) =====
+// ============================================
+// 10. DETALLE (global)
+// ============================================
 window.verDetalle = async function(juegoId) {
     try {
         const url = `https://api.rawg.io/api/games/${juegoId}?key=${RAWG_API_KEY}`;
@@ -425,7 +462,9 @@ if (modal) {
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('d-none'); });
 }
 
-// ===== NOTICIAS =====
+// ============================================
+// 11. NOTICIAS
+// ============================================
 async function cargarNoticias() {
     const contenedor = document.getElementById('contenedor-noticias');
     if (!contenedor) return;
@@ -460,52 +499,80 @@ async function cargarNoticias() {
     }
 }
 
-// ===== AMIGOS =====
+// ============================================
+// 12. AMIGOS / USUARIOS REGISTRADOS
+// ============================================
 async function cargarUsuarios() {
     const contenedor = document.getElementById('listaUsuarios');
     if (!contenedor) return;
+
     try {
+        // Obtener todos los usuarios de Firestore
         const snap = await getDocs(collection(db, "usuarios"));
         const usuarios = [];
         snap.forEach(doc => {
             const data = doc.data();
+            // Excluir al usuario actual
             if (doc.id !== currentUser?.uid) {
-                usuarios.push({ uid: doc.id, nombre: data.nombre, email: data.email });
+                usuarios.push({
+                    uid: doc.id,
+                    nombre: data.nombre || data.email?.split('@')[0] || 'Usuario',
+                    email: data.email || ''
+                });
             }
         });
+
         if (usuarios.length === 0) {
-            contenedor.innerHTML = '<p>No hay otros usuarios registrados.</p>';
+            contenedor.innerHTML = '<p style="color:#888;">No hay otros usuarios registrados.</p>';
             return;
         }
+
         contenedor.innerHTML = '';
         usuarios.forEach(user => {
             const card = document.createElement('div');
             card.className = 'friend-card';
+            const initial = user.nombre.charAt(0).toUpperCase();
+            const colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c'];
+            const colorIndex = Math.floor(Math.random() * colors.length);
             card.innerHTML = `
                 <div class="friend-info">
-                    <div class="friend-avatar" style="background: #3498db;">${user.nombre.charAt(0).toUpperCase()}</div>
+                    <div class="friend-avatar" style="background: ${colors[colorIndex]};">${initial}</div>
                     <div>
                         <h4>${user.nombre}</h4>
                         <span style="font-size:0.8rem; color:#666;">${user.email}</span>
                     </div>
                 </div>
-                <button class="btn-add-friend" onclick="alert('Solicitud enviada a ${user.nombre}')"><i class="fas fa-user-plus"></i> Agregar</button>
+                <button class="btn-add-friend" data-uid="${user.uid}" data-nombre="${user.nombre}">
+                    <i class="fas fa-user-plus"></i> Agregar
+                </button>
             `;
             contenedor.appendChild(card);
         });
+
+        // Evento para botones "Agregar" (puedes implementar solicitud real si quieres)
+        contenedor.querySelectorAll('.btn-add-friend').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const nombre = btn.dataset.nombre;
+                alert(`Solicitud de amistad enviada a ${nombre} (funcionalidad en desarrollo)`);
+            });
+        });
+
     } catch (error) {
-        console.error(error);
-        contenedor.innerHTML = '<p>Error al cargar usuarios.</p>';
+        console.error('Error al cargar usuarios:', error);
+        contenedor.innerHTML = `<p style="color:red;">Error al cargar usuarios: ${error.message}</p>`;
     }
 }
 
-// ===== CHAT =====
+// ============================================
+// 13. CHAT
+// ============================================
 let chatIniciado = false;
 function inicializarChat() {
     if (chatIniciado) return;
     chatIniciado = true;
     const cajaMensajes = document.getElementById('caja-mensajes');
     if (!cajaMensajes) return;
+
     const q = query(collection(db, "chat_global"), orderBy("timestamp", "asc"));
     onSnapshot(q, (snapshot) => {
         cajaMensajes.innerHTML = '';
@@ -556,7 +623,9 @@ if (btnEnviar) {
     });
 }
 
-// ===== INICIALIZACIÓN =====
+// ============================================
+// 14. INICIALIZACIÓN
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     const allBtn = document.querySelector('.nav-item[data-target="inicio"]');
     if (allBtn) allBtn.classList.add('active');
