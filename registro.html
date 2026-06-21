@@ -7,40 +7,31 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-body">
-
     <div class="auth-container">
         <div class="auth-card">
             <h2>Crear cuenta</h2>
             <p class="auth-subtitle">Completa los campos para registrarte</p>
-
             <form id="registroForm">
                 <div class="input-group">
                     <input type="text" id="regNombre" placeholder="Nombre de usuario" required>
                 </div>
-                
                 <div class="input-group">
                     <input type="email" id="regEmail" placeholder="Correo electrónico" required>
                 </div>
-                
                 <div class="input-group">
                     <input type="password" id="regPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
                 </div>
-                
                 <div class="input-group">
                     <input type="password" id="regConfirm" placeholder="Confirmar contraseña" required>
                 </div>
-
                 <button type="submit" class="btn-submit">Registrarse</button>
             </form>
-
             <p class="auth-terms">Al registrarte aceptas nuestros Términos y Política de privacidad</p>
-
             <div class="auth-links" style="justify-content: center;">
                 <a href="index.html">¿Ya tienes cuenta? Inicia sesión</a>
             </div>
         </div>
     </div>
-
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/auth.js"></script>
 </body>
