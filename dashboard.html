@@ -9,50 +9,47 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <h2>🎮 GameHub</h2>
+                <h2><i class="fas fa-gamepad" style="margin-right: 10px;"></i>GameHub</h2>
                 <span id="navUsername" class="user-name">Usuario</span>
             </div>
             <nav class="sidebar-nav">
                 <div class="nav-group">
                     <h3>Biblioteca</h3>
-                    <button class="nav-item active" data-target="inicio" data-platform="all">📚 Todas las plataformas</button>
+                    <button class="nav-item active" data-target="inicio" data-platform="all"><i class="fas fa-layer-group" style="margin-right: 10px;"></i> Todas las plataformas</button>
                 </div>
                 <div class="nav-group">
                     <h3>Plataformas</h3>
-                    <button class="nav-item platform-btn" data-platform="1">🖥️ PC</button>
-                    <button class="nav-item platform-btn" data-platform="2">🎮 PlayStation</button>
-                    <button class="nav-item platform-btn" data-platform="3">🎮 Xbox</button>
-                    <button class="nav-item platform-btn" data-platform="4">🎮 Nintendo</button>
-                    <button class="nav-item platform-btn" data-platform="6">📱 iOS</button>
-                    <button class="nav-item platform-btn" data-platform="7">📱 Android</button>
+                    <button class="nav-item platform-btn" data-platform="1"><i class="fas fa-desktop" style="margin-right: 10px;"></i> PC</button>
+                    <button class="nav-item platform-btn" data-platform="2"><i class="fas fa-playstation" style="margin-right: 10px;"></i> PlayStation</button>
+                    <button class="nav-item platform-btn" data-platform="3"><i class="fas fa-xbox" style="margin-right: 10px;"></i> Xbox</button>
+                    <button class="nav-item platform-btn" data-platform="4"><i class="fas fa-gamepad" style="margin-right: 10px;"></i> Nintendo</button>
+                    <button class="nav-item platform-btn" data-platform="6"><i class="fas fa-mobile-alt" style="margin-right: 10px;"></i> iOS</button>
+                    <button class="nav-item platform-btn" data-platform="7"><i class="fab fa-android" style="margin-right: 10px;"></i> Android</button>
                 </div>
                 <div class="nav-group">
                     <h3>Otros</h3>
-                    <button class="nav-item" data-target="mejores">⭐ Mejores juegos</button>
-                    <button class="nav-item" data-target="menos">➖ Menos populares</button>
-                    <button class="nav-item" data-target="favoritos">❤️ Favoritos</button>
-                    <button class="nav-item" data-target="amigos">👥 Amigos / Chat</button>
-                    <button class="nav-item" data-target="noticias">📰 Noticias</button>
-                    <button class="nav-item" data-target="perfil">👤 Mi perfil</button>
+                    <button class="nav-item" data-target="mejores"><i class="fas fa-trophy" style="margin-right: 10px;"></i> Mejores juegos</button>
+                    <button class="nav-item" data-target="menos"><i class="fas fa-arrow-down" style="margin-right: 10px;"></i> Menos populares</button>
+                    <button class="nav-item" data-target="favoritos"><i class="fas fa-heart" style="margin-right: 10px;"></i> Favoritos</button>
+                    <button class="nav-item" data-target="amigos"><i class="fas fa-users" style="margin-right: 10px;"></i> Amigos / Chat</button>
+                    <button class="nav-item" data-target="noticias"><i class="fas fa-newspaper" style="margin-right: 10px;"></i> Noticias</button>
+                    <button class="nav-item" data-target="perfil"><i class="fas fa-user-circle" style="margin-right: 10px;"></i> Mi perfil</button>
                 </div>
             </nav>
         </aside>
 
         <main class="main-area">
-            <!-- Topbar -->
             <header class="topbar">
-                <div class="user-badge">👋 Hola, <span id="displayUserShort">Usuario</span></div>
+                <div class="user-badge"><i class="fas fa-user" style="margin-right: 8px;"></i> Hola, <span id="displayUserShort">Usuario</span></div>
                 <div class="search-wrapper">
                     <input type="text" id="searchInput" class="search-input" placeholder="Buscar juegos...">
-                    <button id="btnBuscar" class="btn-search">🔍</button>
+                    <button id="btnBuscar" class="btn-search"><i class="fas fa-search"></i></button>
                 </div>
-                <button id="btnCerrarSesion" class="btn-logout">Cerrar Sesión</button>
+                <button id="btnCerrarSesion" class="btn-logout"><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Cerrar Sesión</button>
             </header>
 
-            <!-- Inicio -->
             <section id="inicio" class="view-section">
                 <div class="section-header">
                     <h1 class="section-title" id="tituloSeccion">Todas las plataformas</h1>
@@ -64,60 +61,54 @@
                 <button id="btnCargarMas" class="btn-load-more">Cargar más juegos</button>
             </section>
 
-            <!-- Mejores -->
             <section id="mejores" class="view-section d-none">
                 <div class="section-header">
-                    <h1 class="section-title">⭐ Mejores juegos</h1>
+                    <h1 class="section-title"><i class="fas fa-trophy" style="margin-right: 10px;"></i> Mejores juegos</h1>
                     <p class="section-subtitle">Los juegos mejor valorados</p>
                 </div>
                 <div class="game-grid" id="contenedor-mejores"></div>
                 <button id="btnCargarMasMejores" class="btn-load-more">Cargar más</button>
             </section>
 
-            <!-- Menos populares -->
             <section id="menos" class="view-section d-none">
                 <div class="section-header">
-                    <h1 class="section-title">➖ Menos populares</h1>
+                    <h1 class="section-title"><i class="fas fa-arrow-down" style="margin-right: 10px;"></i> Menos populares</h1>
                     <p class="section-subtitle">Juegos con menor rating</p>
                 </div>
                 <div class="game-grid" id="contenedor-menos"></div>
                 <button id="btnCargarMasMenos" class="btn-load-more">Cargar más</button>
             </section>
 
-            <!-- Favoritos -->
             <section id="favoritos" class="view-section d-none">
                 <div class="section-header">
-                    <h1 class="section-title">❤️ Mis favoritos</h1>
+                    <h1 class="section-title"><i class="fas fa-heart" style="margin-right: 10px;"></i> Mis favoritos</h1>
                     <p class="section-subtitle">Tus juegos favoritos</p>
                 </div>
                 <div class="game-grid" id="contenedor-favoritos"></div>
             </section>
 
-            <!-- Amigos / Chat -->
             <section id="amigos" class="view-section d-none">
-                <h1 class="section-title">Amigos y Chat</h1>
+                <h1 class="section-title"><i class="fas fa-users" style="margin-right: 10px;"></i> Amigos y Chat</h1>
                 <h3 style="margin: 20px 0 10px;">Usuarios registrados</h3>
                 <div id="listaUsuarios" class="friends-container"></div>
                 <h3 style="margin: 20px 0 10px;">Foro Global</h3>
                 <div class="chat-box" id="caja-mensajes"></div>
                 <div class="chat-input-area">
                     <input type="text" id="inputMensaje" placeholder="Escribe un mensaje...">
-                    <button id="btnEnviarMensaje">Enviar</button>
+                    <button id="btnEnviarMensaje"><i class="fas fa-paper-plane" style="margin-right: 6px;"></i> Enviar</button>
                 </div>
             </section>
 
-            <!-- Noticias -->
             <section id="noticias" class="view-section d-none">
                 <div class="section-header">
-                    <h1 class="section-title">📰 Noticias de videojuegos</h1>
+                    <h1 class="section-title"><i class="fas fa-newspaper" style="margin-right: 10px;"></i> Noticias de videojuegos</h1>
                     <p class="section-subtitle">Lo último en el mundo gamer</p>
                 </div>
                 <div id="contenedor-noticias" class="noticias-container"></div>
             </section>
 
-            <!-- Perfil -->
             <section id="perfil" class="view-section d-none">
-                <h1 class="section-title">Mi Perfil</h1>
+                <h1 class="section-title"><i class="fas fa-user-circle" style="margin-right: 10px;"></i> Mi Perfil</h1>
                 <div class="profile-card">
                     <p><strong>Usuario:</strong> <span id="displayUser">Cargando...</span></p>
                     <p><strong>Correo:</strong> <span id="displayEmail">Cargando...</span></p>
@@ -127,7 +118,7 @@
         </main>
     </div>
 
-    <!-- Modal para detalles -->
+    <!-- Modal -->
     <div id="modalDetalle" class="modal d-none">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
