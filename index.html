@@ -9,28 +9,31 @@
 <body class="auth-body">
 
     <div class="auth-container">
-        <h2>BIENVENIDO</h2>
-        
-        <form id="loginForm">
-            <div class="input-group">
-                <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="loginPassword" placeholder="Ingresa tu contraseña" required>
-            </div>
-            
-            <div class="input-group" style="background: #f9f9f9; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-                <input type="checkbox" id="robotCheck" required style="width: auto;">
-                <label for="robotCheck"> No soy un robot</label>
-            </div>
+        <div class="auth-card">
+            <h2>Bienvenido</h2>
+            <p class="auth-subtitle">Inicia sesión para continuar</p>
 
-            <button type="submit" class="btn-submit">Iniciar sesión</button>
-        </form>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                </div>
+                
+                <div class="input-group checkbox-group">
+                    <input type="checkbox" id="robotCheck" required>
+                    <label for="robotCheck">No soy un robot</label>
+                </div>
 
-        <div class="auth-links">
-            <a href="registro.html">No tienes cuenta, crea una</a>
-            <a href="#">¿Olvidaste tu contraseña?</a>
+                <button type="submit" class="btn-submit">Iniciar sesión</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="registro.html">Crear cuenta</a>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
         </div>
     </div>
 
