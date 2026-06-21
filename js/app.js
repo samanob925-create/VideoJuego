@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // ¡Cambia por tu clave de NewsData.io!
+const NEWS_API_KEY = "pub_12345abcde";
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -104,7 +104,7 @@ platformBtns.forEach(btn => {
     });
 });
 
-// ===== CARGA DE JUEGOS (con parent_platforms) =====
+// ===== CARGA DE JUEGOS =====
 async function cargarJuegos(platform, page = 1, reset = false) {
     if (isLoading) return;
     isLoading = true;
@@ -176,12 +176,12 @@ function renderGames(games, container) {
             <img src="${juego.background_image || 'https://via.placeholder.com/300x160?text=Sin+imagen'}" alt="${juego.name}">
             <div class="game-card-content">
                 <h4>${juego.name}</h4>
-                <p class="platforms">🎮 ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
-                <p class="rating">⭐ ${juego.rating} / 5</p>
+                <p class="platforms"><i class="fas fa-gamepad" style="margin-right: 4px;"></i> ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
+                <p class="rating"><i class="fas fa-star" style="color: #f1c40f; margin-right: 4px;"></i> ${juego.rating} / 5</p>
                 <p class="genres">${generos}</p>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button class="btn-juego" onclick="verDetalle(${juego.id})">Ver detalles</button>
-                    <button class="btn-fav" data-id="${juego.id}" data-nombre="${juego.name}" data-imagen="${juego.background_image || ''}">❤️</button>
+                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle" style="margin-right: 6px;"></i> Ver detalles</button>
+                    <button class="btn-fav" data-id="${juego.id}" data-nombre="${juego.name}" data-imagen="${juego.background_image || ''}"><i class="far fa-heart"></i></button>
                 </div>
             </div>
         `;
@@ -192,12 +192,26 @@ function renderGames(games, container) {
     container.querySelectorAll('.btn-fav').forEach(async (btn) => {
         const id = btn.dataset.id;
         const esFav = await esFavorito(id);
-        btn.style.color = esFav ? '#e74c3c' : 'inherit';
+        const icon = btn.querySelector('i');
+        if (esFav) {
+            icon.className = 'fas fa-heart';
+            icon.style.color = '#e74c3c';
+        } else {
+            icon.className = 'far fa-heart';
+            icon.style.color = 'inherit';
+        }
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             await toggleFavorito(id, btn.dataset.nombre, btn.dataset.imagen);
             const esFav2 = await esFavorito(id);
-            btn.style.color = esFav2 ? '#e74c3c' : 'inherit';
+            const icon2 = btn.querySelector('i');
+            if (esFav2) {
+                icon2.className = 'fas fa-heart';
+                icon2.style.color = '#e74c3c';
+            } else {
+                icon2.className = 'far fa-heart';
+                icon2.style.color = 'inherit';
+            }
         });
     });
 }
@@ -352,8 +366,8 @@ async function cargarFavoritos() {
                 <img src="${juego.background_image || 'https://via.placeholder.com/300x160?text=Sin+imagen'}" alt="${juego.name}">
                 <div class="game-card-content">
                     <h4>${juego.name}</h4>
-                    <button class="btn-juego" onclick="verDetalle(${juego.id})">Ver detalles</button>
-                    <button class="btn-fav" style="color:#e74c3c;" onclick="toggleFavorito('${juego.id}', '${juego.name}', '${juego.background_image}')">❤️ Quitar</button>
+                    <button class="btn-juego" onclick="verDetalle(${juego.id})"><i class="fas fa-info-circle" style="margin-right: 6px;"></i> Ver detalles</button>
+                    <button class="btn-fav" style="color:#e74c3c;" onclick="toggleFavorito('${juego.id}', '${juego.name}', '${juego.background_image}')"><i class="fas fa-heart" style="margin-right: 6px;"></i> Quitar</button>
                 </div>
             `;
             contenedor.appendChild(card);
@@ -453,7 +467,7 @@ async function cargarUsuarios() {
                         <span style="font-size:0.8rem; color:#666;">${user.email}</span>
                     </div>
                 </div>
-                <button class="btn-add-friend" onclick="alert('Solicitud enviada a ${user.nombre}')">+ Agregar</button>
+                <button class="btn-add-friend" onclick="alert('Solicitud enviada a ${user.nombre}')"><i class="fas fa-user-plus" style="margin-right: 6px;"></i> Agregar</button>
             `;
             contenedor.appendChild(card);
         });
