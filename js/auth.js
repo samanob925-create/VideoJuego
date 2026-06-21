@@ -30,13 +30,13 @@ if (loginForm) {
             let mensaje = '';
             switch (error.code) {
                 case 'auth/user-not-found':
-                    mensaje = 'No existe una cuenta con este correo.';
+                    mensaje = 'No existe una cuenta con este correo electronico.';
                     break;
                 case 'auth/wrong-password':
-                    mensaje = 'Contraseña incorrecta. Intenta de nuevo.';
+                    mensaje = 'Contrasena incorrecta. Intenta de nuevo.';
                     break;
                 case 'auth/invalid-email':
-                    mensaje = 'El correo electrónico no es válido.';
+                    mensaje = 'El correo electronico no es valido.';
                     break;
                 default:
                     mensaje = 'Error al iniciar sesion: ' + error.message;
@@ -67,13 +67,13 @@ if (registroForm) {
         const nombre = document.getElementById('regNombre').value.trim();
 
         if (password !== confirmar) {
-            alert('Las contraseñas no coinciden.');
+            alert('Las contrasenas no coinciden.');
             grecaptcha.reset();
             return;
         }
 
         if (password.length < 6) {
-            alert('La contraseña debe tener al menos 6 caracteres.');
+            alert('La contrasena debe tener al menos 6 caracteres.');
             grecaptcha.reset();
             return;
         }
@@ -97,7 +97,7 @@ if (registroForm) {
             switch (error.code) {
                 case 'auth/email-already-in-use':
                     mensaje = 'Este correo electronico ya esta registrado.';
-                    sugerencia = 'Si ya tienes cuenta, ve a "Iniciar sesion". ¿Olvidaste tu contrasena? Usa "¿Olvidaste tu contrasena?" en la pagina de login.';
+                    sugerencia = 'Si ya tienes cuenta, ve a "Iniciar sesion". Si olvidaste tu contrasena, usa la opcion "Olvidaste tu contrasena?" en la pagina de login.';
                     break;
                 case 'auth/invalid-email':
                     mensaje = 'El correo electronico no es valido.';
@@ -116,7 +116,7 @@ if (registroForm) {
 }
 
 // ============================================
-// 3. RECUPERACION DE CONTRASEÑA
+// 3. RECUPERACION DE CONTRASENA
 // ============================================
 const btnForgot = document.getElementById('btnForgotPassword');
 const modalRecuperar = document.getElementById('modalRecuperar');
