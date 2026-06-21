@@ -2,6 +2,16 @@ import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+// --- CONSTANTES ---
+const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
+const BASE_URL = "https://api.rawg.io/api/games";
+
+// --- ESTADO ---
+let currentPlatform = "all";      // "all" o ID numérico
+let currentPage = 1;
+let isLoading = false;
+let hasMore = true;
+
 // --- 1. SESIÓN ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -19,8 +29,8 @@ if(btnCerrarSesion) {
     btnCerrarSesion.addEventListener('click', () => { signOut(auth); });
 }
 
-// --- 2. NAVEGACIÓN ---
-const navItems = document.querySelectorAll('.nav-item');
+// --- 2. NAVEGACIÓN PRINCIPAL (secciones fijas) ---
+const navItems = document.querySelectorAll('.nav-item:not(.platform-btn)'); // excluimos los botones de plataforma
 const sections = document.querySelectorAll('.view-section');
 
 navItems.forEach(item => {
@@ -34,50 +44,149 @@ navItems.forEach(item => {
         const seccionObjetivo = document.getElementById(target);
         if(seccionObjetivo) seccionObjetivo.classList.remove('d-none');
 
+        // Si es "tendencias" y tiene data-platform, cargamos
+        if (target === 'tendencias') {
+            const platform = item.getAttribute('data-platform') || 'all';
+            cargarJuegos(platform, 1, true);
+        }
         if (target === 'amigos') inicializarChat();
-        if (target === 'tendencias') cargarJuegosMultiplataforma();
     });
 });
 
-// --- 3. API DE RAWG (MULTIPLATAFORMA) ---
-let juegosCargados = false;
-const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed"; // <--- NO OLVIDES PONER TU LLAVE
+// --- 3. BOTONES DE PLATAFORMA ---
+const platformBtns = document.querySelectorAll('.platform-btn');
+platformBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Quitamos activo de todos los nav-items y ponemos activo en este
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-async function cargarJuegosMultiplataforma() {
-    if (juegosCargados) return; 
-    
+        const platformId = btn.getAttribute('data-platform');
+        // Mostramos la sección de tendencias (que usaremos como contenedor)
+        sections.forEach(sec => sec.classList.add('d-none'));
+        const seccionTendencias = document.getElementById('tendencias');
+        seccionTendencias.classList.remove('d-none');
+
+        // Cargamos juegos de esa plataforma
+        cargarJuegos(platformId, 1, true);
+    });
+});
+
+// --- 4. CARGA DE JUEGOS (con paginación) ---
+async function cargarJuegos(platform, page = 1, reset = false) {
     const contenedor = document.getElementById('contenedor-juegos');
-    if(!contenedor) return;
+    const titulo = document.getElementById('tituloPlataforma');
+    const subtitulo = document.getElementById('subtituloPlataforma');
+    const btnCargarMas = document.getElementById('btnCargarMas');
 
-    contenedor.innerHTML = '<p style="color: #666;">Conectando con RAWG API...</p>';
+    if (!contenedor) return;
+
+    // Evitar múltiples llamadas simultáneas
+    if (isLoading) return;
+    isLoading = true;
+
+    // Si reseteamos, limpiamos y reiniciamos la página
+    if (reset) {
+        currentPage = 1;
+        hasMore = true;
+        contenedor.innerHTML = '<p style="color: #666;">Cargando juegos...</p>';
+        btnCargarMas.style.display = 'none';
+    }
+
+    // Construir URL
+    let url = `${BASE_URL}?key=${RAWG_API_KEY}&page_size=20&page=${page}`;
+    if (platform !== 'all') {
+        url += `&platforms=${platform}`;
+    }
+
+    // Nombre de la plataforma para el título
+    const platformNames = {
+        '1': 'PC',
+        '2': 'PlayStation',
+        '3': 'Xbox',
+        '4': 'Nintendo',
+        '6': 'iOS',
+        '7': 'Android',
+        'all': 'Todas las plataformas'
+    };
+    const nombrePlataforma = platformNames[platform] || `Plataforma ${platform}`;
+    titulo.textContent = `Juegos de ${nombrePlataforma}`;
+    subtitulo.textContent = `Los títulos más populares en ${nombrePlataforma}`;
 
     try {
-        // Pedimos juegos populares, la API trae sus plataformas automáticamente
-        const respuesta = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&page_size=12`);
+        const respuesta = await fetch(url);
         const datos = await respuesta.json();
 
-        contenedor.innerHTML = ''; 
-        datos.results.forEach(juego => {
-            // Extraemos los nombres de las plataformas en las que está el juego (Ej: "PC, Xbox One, PlayStation 5")
-            const plataformasTexto = juego.platforms.map(p => p.platform.name).slice(0, 3).join(', ');
+        if (!datos.results || datos.results.length === 0) {
+            contenedor.innerHTML = '<p>No se encontraron juegos para esta plataforma.</p>';
+            btnCargarMas.style.display = 'none';
+            hasMore = false;
+            isLoading = false;
+            return;
+        }
 
-            contenedor.innerHTML += `
-                <div class="game-card">
-                    <img src="${juego.background_image}" alt="${juego.name}">
-                    <h4>${juego.name}</h4>
-                    <p class="platforms">🎮 ${plataformasTexto}...</p>
-                    <p style="color: #666; font-size: 0.8rem; margin-bottom: 10px;">⭐ Rating: ${juego.rating}</p>
-                    <button class="btn-juego">Ver Especificaciones</button>
-                </div>
+        // Si es reset, reemplazamos el contenido
+        if (reset) {
+            contenedor.innerHTML = '';
+        }
+
+        // Renderizar cada juego
+        datos.results.forEach(juego => {
+            const plataformasTexto = juego.platforms.map(p => p.platform.name).slice(0, 3).join(', ');
+            const generos = juego.genres ? juego.genres.map(g => g.name).slice(0, 2).join(', ') : '';
+
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <img src="${juego.background_image || 'https://via.placeholder.com/300x200?text=Sin+imagen'}" alt="${juego.name}">
+                <h4>${juego.name}</h4>
+                <p class="platforms">🎮 ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
+                <p style="color: #666; font-size: 0.8rem; margin-bottom: 10px;">⭐ ${juego.rating} / 5</p>
+                <p style="color: #888; font-size: 0.75rem; margin-bottom: 8px;">${generos}</p>
+                <button class="btn-juego" onclick="alert('Más info de ${juego.name}')">Ver detalles</button>
             `;
+            contenedor.appendChild(card);
         });
-        juegosCargados = true;
+
+        // Control de paginación
+        hasMore = datos.next !== null;
+        if (hasMore) {
+            btnCargarMas.style.display = 'block';
+        } else {
+            btnCargarMas.style.display = 'none';
+        }
+
+        currentPage = page; // actualizamos la página actual
+
     } catch (error) {
-        contenedor.innerHTML = '<p style="color: red; font-weight: bold;">Error al cargar. Revisa tu API KEY.</p>';
+        console.error(error);
+        contenedor.innerHTML = '<p style="color: red; font-weight: bold;">Error al cargar juegos. Verifica tu conexión o la API Key.</p>';
+    } finally {
+        isLoading = false;
     }
 }
 
-// --- 4. CHAT GLOBAL ---
+// --- 5. BOTÓN "CARGAR MÁS" ---
+document.getElementById('btnCargarMas')?.addEventListener('click', () => {
+    if (!isLoading && hasMore) {
+        const nextPage = currentPage + 1;
+        // Necesitamos saber la plataforma actual, la obtenemos del botón activo o de una variable
+        const activePlatformBtn = document.querySelector('.platform-btn.active');
+        let platform = 'all';
+        if (activePlatformBtn) {
+            platform = activePlatformBtn.getAttribute('data-platform');
+        } else {
+            // Si no hay botón activo, tal vez se activó "Todas las plataformas"
+            const allBtn = document.querySelector('.nav-item[data-target="tendencias"][data-platform="all"]');
+            if (allBtn && allBtn.classList.contains('active')) {
+                platform = 'all';
+            }
+        }
+        cargarJuegos(platform, nextPage, false);
+    }
+});
+
+// --- 6. CHAT (sin cambios) ---
 let chatIniciado = false;
 
 function inicializarChat() {
