@@ -11,7 +11,7 @@ let currentPlatform = "all";       // "all" o ID numérico
 let currentPage = 1;
 let isLoading = false;
 let hasMore = true;
-let allGames = [];                // para búsqueda local
+let allGames = [];
 
 // ===== ELEMENTOS DOM =====
 const contenedor = document.getElementById('contenedor-juegos');
@@ -44,7 +44,6 @@ const sections = document.querySelectorAll('.view-section');
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
-        // Desactivar todos los nav items
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         item.classList.add('active');
 
@@ -53,15 +52,10 @@ navItems.forEach(item => {
         const seccion = document.getElementById(target);
         if (seccion) seccion.classList.remove('d-none');
 
-        // Si es "inicio", cargar juegos según la plataforma activa (o "all")
         if (target === 'inicio') {
-            // Obtener la plataforma del botón activo (puede ser un platform-btn)
-            const activePlatformBtn = document.querySelector('.platform-btn.active');
-            const platform = activePlatformBtn ? activePlatformBtn.getAttribute('data-platform') : 'all';
-            cargarJuegos(platform, 1, true);
+            // Si es "inicio", cargamos según la plataforma actual (por defecto "all")
+            cargarJuegos(currentPlatform, 1, true);
         }
-
-        // Si es "amigos", inicializar chat
         if (target === 'amigos') inicializarChat();
     });
 });
@@ -74,7 +68,9 @@ platformBtns.forEach(btn => {
         btn.classList.add('active');
 
         const platform = btn.getAttribute('data-platform');
-        // Mostrar la sección de inicio y ocultar las demás
+        currentPlatform = platform; // guardamos la plataforma seleccionada
+
+        // Mostrar la sección de inicio
         sections.forEach(sec => sec.classList.add('d-none'));
         document.getElementById('inicio').classList.remove('d-none');
 
@@ -102,6 +98,8 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         url += `&platforms=${platform}`;
     }
 
+    console.log('Fetching:', url); // <--- Para depuración
+
     // Actualizar título
     const platformNames = {
         '1': 'PC',
@@ -118,6 +116,9 @@ async function cargarJuegos(platform, page = 1, reset = false) {
 
     try {
         const respuesta = await fetch(url);
+        if (!respuesta.ok) {
+            throw new Error(`HTTP error! status: ${respuesta.status}`);
+        }
         const datos = await respuesta.json();
 
         if (!datos.results || datos.results.length === 0) {
@@ -129,27 +130,21 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         }
 
         if (reset) {
-            contenedor.innerHTML = '';
-        }
-
-        // Guardar todos los juegos para búsqueda
-        if (reset) {
             allGames = datos.results;
         } else {
             allGames = allGames.concat(datos.results);
         }
 
-        // Renderizar
         renderGames(allGames);
 
-        // Paginación
         hasMore = datos.next !== null;
         btnCargarMas.style.display = hasMore ? 'block' : 'none';
         currentPage = page;
 
     } catch (error) {
-        console.error(error);
-        contenedor.innerHTML = '<p style="color: #e74c3c;">Error al cargar juegos. Verifica tu conexión o la API Key.</p>';
+        console.error('Error en cargarJuegos:', error);
+        contenedor.innerHTML = `<p style="color: #e74c3c;">Error al cargar juegos: ${error.message}</p>`;
+        btnCargarMas.style.display = 'none';
     } finally {
         isLoading = false;
     }
@@ -158,6 +153,10 @@ async function cargarJuegos(platform, page = 1, reset = false) {
 // ===== 5. RENDERIZAR JUEGOS =====
 function renderGames(games) {
     if (!contenedor) return;
+    if (!games || games.length === 0) {
+        contenedor.innerHTML = '<p style="color: #888;">No hay juegos para mostrar.</p>';
+        return;
+    }
     contenedor.innerHTML = '';
     games.forEach(juego => {
         const plataformasTexto = juego.platforms.map(p => p.platform.name).slice(0, 3).join(', ');
@@ -172,7 +171,7 @@ function renderGames(games) {
                 <p class="platforms">🎮 ${plataformasTexto}${juego.platforms.length > 3 ? ' ...' : ''}</p>
                 <p class="rating">⭐ ${juego.rating} / 5</p>
                 <p class="genres">${generos}</p>
-                <button class="btn-juego" onclick="alert('Más información sobre ${juego.name}')">Ver detalles</button>
+                <button class="btn-juego" onclick="alert('Más información sobre ${juego.name.replace(/'/g, "\\'")}')">Ver detalles</button>
             </div>
         `;
         contenedor.appendChild(card);
@@ -183,13 +182,14 @@ function renderGames(games) {
 function buscarJuegos(termino) {
     if (!termino.trim()) {
         renderGames(allGames);
+        // Restaurar el botón "Cargar más" según estado
+        btnCargarMas.style.display = hasMore ? 'block' : 'none';
         return;
     }
     const filtrados = allGames.filter(juego =>
         juego.name.toLowerCase().includes(termino.toLowerCase())
     );
     renderGames(filtrados);
-    // Ocultar botón "Cargar más" durante la búsqueda
     btnCargarMas.style.display = 'none';
 }
 
@@ -207,30 +207,21 @@ btnBuscar.addEventListener('click', () => {
 btnCargarMas.addEventListener('click', () => {
     if (!isLoading && hasMore) {
         const nextPage = currentPage + 1;
-        // Determinar plataforma activa
-        const activePlatformBtn = document.querySelector('.platform-btn.active');
-        let platform = 'all';
-        if (activePlatformBtn) {
-            platform = activePlatformBtn.getAttribute('data-platform');
-        } else {
-            // Si no hay botón activo, usar "all"
-            platform = 'all';
-        }
-        cargarJuegos(platform, nextPage, false);
+        cargarJuegos(currentPlatform, nextPage, false);
     }
 });
 
 // ===== 8. INICIALIZAR CARGA POR DEFECTO =====
-// Al cargar la página, si la sección "inicio" está visible, cargamos "all"
-// Como "inicio" está visible por defecto, lo hacemos.
 document.addEventListener('DOMContentLoaded', () => {
     // Asegurar que el botón "Todas las plataformas" esté activo
     const allBtn = document.querySelector('.nav-item[data-target="inicio"]');
     if (allBtn) allBtn.classList.add('active');
+    // Establecer plataforma por defecto
+    currentPlatform = 'all';
     cargarJuegos('all', 1, true);
 });
 
-// ===== 9. CHAT (sin cambios) =====
+// ===== 9. CHAT =====
 let chatIniciado = false;
 
 function inicializarChat() {
