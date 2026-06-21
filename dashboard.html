@@ -20,8 +20,23 @@
 
             <div class="nav-group">
                 <h3>Biblioteca</h3>
+                <button class="nav-item" data-target="tendencias" data-platform="all">🔥 Todas las plataformas</button>
+            </div>
+
+            <!-- NUEVO: Plataformas -->
+            <div class="nav-group">
+                <h3>Plataformas</h3>
+                <button class="nav-item platform-btn" data-platform="1">🖥️ PC</button>
+                <button class="nav-item platform-btn" data-platform="2">🎮 PlayStation</button>
+                <button class="nav-item platform-btn" data-platform="3">🎮 Xbox</button>
+                <button class="nav-item platform-btn" data-platform="4">🎮 Nintendo</button>
+                <button class="nav-item platform-btn" data-platform="6">📱 iOS</button>
+                <button class="nav-item platform-btn" data-platform="7">📱 Android</button>
+            </div>
+
+            <div class="nav-group">
+                <h3>Otros</h3>
                 <button class="nav-item" data-target="mejores">📋 Mejores juegos</button>
-                <button class="nav-item" data-target="tendencias">🔥 Tendencias (API)</button>
                 <button class="nav-item" data-target="menos">➖ Menos populares</button>
                 <button class="nav-item" data-target="favoritos">⭐ Favoritos</button>
                 <button class="nav-item" data-target="amigos">👥 Amigos / Chat</button>
@@ -56,12 +71,14 @@
                 </div>
             </section>
 
+            <!-- Sección de tendencias (ahora dinámica para plataformas) -->
             <section id="tendencias" class="view-section d-none">
-                <h1 class="section-title">Juegos Multiplataforma en Tendencia</h1>
-                <p class="section-subtitle">Datos obtenidos en tiempo real desde RAWG API.</p>
+                <h1 class="section-title" id="tituloPlataforma">Juegos</h1>
+                <p class="section-subtitle" id="subtituloPlataforma">Explora los títulos más populares</p>
                 <div class="game-grid" id="contenedor-juegos">
                     <p>Cargando catálogo...</p>
                 </div>
+                <button id="btnCargarMas" class="btn-juego" style="margin: 20px auto; display: none; width: auto; padding: 12px 40px; background: #4285f4; border: none; border-radius: 30px; color: white; font-weight: bold; cursor: pointer;">Cargar más</button>
             </section>
 
             <section id="amigos" class="view-section d-none">
