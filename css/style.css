@@ -193,12 +193,12 @@ body {
 }
 
 .modal-content {
-    background: var(--card_bg);
+    background: #ffffff;
     border-radius: var(--radius);
-    max-width: 600px;
+    max-width: 620px;
     width: 92%;
     padding: 32px;
-    max-height: 80vh;
+    max-height: 85vh;
     overflow-y: auto;
     position: relative;
     box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
@@ -226,34 +226,47 @@ body {
     max-height: 280px;
     object-fit: cover;
     border-radius: var(--radius-sm);
-    margin: 16px 0;
+    margin: 12px 0 16px;
 }
 
-#detalleJuego p {
-    margin: 10px 0;
+.detalle-info p {
+    margin: 8px 0;
     font-size: 0.95rem;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-#detalleJuego h2 {
-    margin-top: 0;
-    font-size: 1.8rem;
-    font-weight: 800;
+.detalle-info p strong {
     color: var(--text-dark);
+    font-weight: 600;
+    min-width: 100px;
+    display: inline-block;
 }
 
-/* Mejora para la descripción */
+.detalle-descripcion {
+    margin-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+}
+
+.detalle-descripcion h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
 #detalleDescripcion {
     background: #f8fafc;
     padding: 16px;
     border-radius: var(--radius-sm);
     border-left: 4px solid var(--primary);
-    font-size: 0.95rem !important;
-    line-height: 1.7 !important;
-    color: var(--text-dark) !important;
-    max-height: 200px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+    max-height: 180px;
     overflow-y: auto;
+    margin: 0;
 }
 
 #resetMessage {
