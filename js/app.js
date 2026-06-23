@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // Cambia por tu clave de NewsData.io
+const NEWS_API_KEY = "pub_12345abcde"; // Cambia por tu clave de NewsData.io
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -35,7 +35,6 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
 
-        // Sincronizar usuario a Firestore si no existe
         try {
             const userDocRef = doc(db, "usuarios", user.uid);
             const docSnap = await getDoc(userDocRef);
@@ -51,7 +50,6 @@ onAuthStateChanged(auth, async (user) => {
             console.error("Error al sincronizar usuario:", error);
         }
 
-        // Actualizar UI
         const username = user.email.split('@')[0];
         const navUsername = document.getElementById('navUsername');
         if (navUsername) navUsername.innerText = username;
@@ -62,7 +60,6 @@ onAuthStateChanged(auth, async (user) => {
         const displayEmail = document.getElementById('displayEmail');
         if (displayEmail) displayEmail.innerText = user.email;
 
-        // Cargar lista de usuarios y solicitudes
         cargarUsuarios();
         cargarSolicitudesPendientes();
         cargarAmigos();
@@ -164,7 +161,7 @@ async function cargarJuegos(platform, page = 1, reset = false) {
         '6': 'iOS', '7': 'Android', 'all': 'Todas las plataformas'
     };
     if (tituloSeccion) tituloSeccion.textContent = `Juegos de ${platformNames[platform] || 'Plataforma'}`;
-    if (subtituloSeccion) subtituloSeccion.textContent = 'Los títulos más populares';
+    if (subtituloSeccion) subtituloSeccion.textContent = 'Los titulos mas populares';
 
     try {
         const resp = await fetch(url);
@@ -227,7 +224,6 @@ function renderGames(games, container) {
         container.appendChild(card);
     });
 
-    // Eventos de favoritos
     container.querySelectorAll('.btn-fav').forEach(async (btn) => {
         const id = btn.dataset.id;
         const esFav = await esFavorito(id);
@@ -398,7 +394,7 @@ async function cargarFavoritos() {
     const contenedor = document.getElementById('contenedor-favoritos');
     if (!contenedor) return;
     if (!currentUser) {
-        contenedor.innerHTML = '<p>Inicia sesión para ver favoritos.</p>';
+        contenedor.innerHTML = '<p>Inicia sesion para ver favoritos.</p>';
         return;
     }
     contenedor.innerHTML = '<p class="loading-text">Cargando favoritos...</p>';
@@ -435,27 +431,73 @@ async function cargarFavoritos() {
 }
 
 // ============================================
-// 10. DETALLE (global)
+// 10. DETALLE CON TRADUCCIÓN Y FORMATO MEJORADO
 // ============================================
 window.verDetalle = async function(juegoId) {
     try {
+        // Mostrar loading en el modal
+        document.getElementById('detalleNombre').textContent = 'Cargando...';
+        document.getElementById('detalleImagen').src = '';
+        document.getElementById('detalleDescripcion').textContent = 'Cargando descripcion...';
+        document.getElementById('detalleFecha').textContent = '';
+        document.getElementById('detalleRating').textContent = '';
+        document.getElementById('detallePlataformas').textContent = '';
+        document.getElementById('detalleDesarrollador').textContent = '';
+        document.getElementById('detalleGeneros').textContent = '';
+        modal.classList.remove('d-none');
+
+        // Obtener datos del juego
         const url = `https://api.rawg.io/api/games/${juegoId}?key=${RAWG_API_KEY}`;
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const juego = await resp.json();
 
+        // Limpiar y formatear descripción (quitar texto repetido)
+        let descripcion = juego.description_raw || 'Sin descripcion disponible.';
+        // Quitar texto repetido (cuando se repite la misma frase varias veces)
+        const palabras = descripcion.split(' ');
+        if (palabras.length > 10) {
+            const primerasPalabras = palabras.slice(0, 10).join(' ');
+            // Si la descripción contiene la misma frase repetida, quedarse solo con la primera parte
+            if (descripcion.includes(primerasPalabras + ' ' + primerasPalabras)) {
+                descripcion = palabras.slice(0, palabras.length / 2).join(' ');
+            }
+        }
+        // Limitar a 500 caracteres para no saturar
+        if (descripcion.length > 500) {
+            descripcion = descripcion.substring(0, 500) + '...';
+        }
+
+        // Traducir al español usando Google Translate API (gratuita)
+        let descripcionTraducida = descripcion;
+        try {
+            const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(descripcion)}`;
+            const translateResp = await fetch(translateUrl);
+            if (translateResp.ok) {
+                const translateData = await translateResp.json();
+                if (translateData && translateData[0]) {
+                    descripcionTraducida = translateData[0].map(item => item[0]).join('');
+                }
+            }
+        } catch (translateError) {
+            console.warn('Error al traducir, usando texto original:', translateError);
+            // Si falla la traducción, usamos el texto original
+        }
+
+        // Actualizar modal
         document.getElementById('detalleNombre').textContent = juego.name;
         document.getElementById('detalleImagen').src = juego.background_image || 'https://via.placeholder.com/600x300?text=Sin+imagen';
-        document.getElementById('detalleDescripcion').textContent = juego.description_raw || 'Sin descripcion disponible.';
+        document.getElementById('detalleDescripcion').textContent = descripcionTraducida;
         document.getElementById('detalleFecha').textContent = 'Lanzamiento: ' + (juego.released || 'Desconocido');
         document.getElementById('detalleRating').textContent = 'Rating: ' + juego.rating + ' / 5 (' + juego.ratings_count + ' votos)';
         document.getElementById('detallePlataformas').textContent = 'Plataformas: ' + juego.platforms.map(p => p.platform.name).join(', ');
         document.getElementById('detalleDesarrollador').textContent = 'Desarrollador: ' + (juego.developers ? juego.developers.map(d => d.name).join(', ') : 'Desconocido');
         document.getElementById('detalleGeneros').textContent = 'Generos: ' + (juego.genres ? juego.genres.map(g => g.name).join(', ') : 'No especificado');
 
-        modal.classList.remove('d-none');
     } catch (error) {
+        console.error('Error al cargar detalles:', error);
         alert('Error al cargar detalles: ' + error.message);
+        modal.classList.add('d-none');
     }
 };
 
@@ -507,7 +549,7 @@ async function cargarNoticias() {
 // 12. SISTEMA DE AMISTADES
 // ============================================
 
-// 12a. Cargar usuarios registrados (para enviar solicitudes)
+// 12a. Cargar usuarios registrados
 async function cargarUsuarios() {
     const contenedor = document.getElementById('listaUsuarios');
     if (!contenedor) return;
@@ -553,7 +595,6 @@ async function cargarUsuarios() {
             contenedor.appendChild(card);
         });
 
-        // Evento para enviar solicitud
         contenedor.querySelectorAll('.btn-add-friend').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const destinatarioUid = btn.dataset.uid;
@@ -577,7 +618,6 @@ async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
     }
 
     try {
-        // Verificar si ya existe una solicitud pendiente o aceptada
         const q1 = query(
             collection(db, "solicitudes"),
             where("remitenteUid", "==", currentUser.uid),
@@ -595,7 +635,6 @@ async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
             }
         }
 
-        // Verificar si el destinatario ya te envió solicitud
         const q2 = query(
             collection(db, "solicitudes"),
             where("remitenteUid", "==", destinatarioUid),
@@ -608,7 +647,6 @@ async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
             return;
         }
 
-        // Crear solicitud
         await addDoc(collection(db, "solicitudes"), {
             remitenteUid: currentUser.uid,
             remitenteNombre: currentUser.email.split('@')[0],
@@ -619,7 +657,6 @@ async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
         });
 
         alert('Solicitud de amistad enviada a ' + destinatarioNombre);
-        // Recargar lista de solicitudes pendientes
         cargarSolicitudesPendientes();
     } catch (error) {
         console.error('Error al enviar solicitud:', error);
@@ -627,7 +664,7 @@ async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
     }
 }
 
-// 12c. Cargar solicitudes pendientes (recibidas)
+// 12c. Cargar solicitudes pendientes
 async function cargarSolicitudesPendientes() {
     const contenedor = document.getElementById('solicitudesPendientes');
     if (!contenedor) return;
@@ -690,11 +727,8 @@ window.aceptarSolicitud = async function(solicitudId) {
             return;
         }
 
-        // Actualizar estado a 'aceptada'
         await updateDoc(docRef, { estado: 'aceptada' });
 
-        // Agregar a la lista de amigos (opcional: puedes crear una colección "amigos" o simplemente filtrar solicitudes aceptadas)
-        // Aquí usaremos la colección "amigos" para tener una lista separada
         await addDoc(collection(db, "amigos"), {
             uid: currentUser.uid,
             amigoUid: data.remitenteUid,
@@ -740,7 +774,7 @@ window.rechazarSolicitud = async function(solicitudId) {
     }
 };
 
-// 12f. Cargar lista de amigos (solicitudes aceptadas)
+// 12f. Cargar lista de amigos
 async function cargarAmigos() {
     const contenedor = document.getElementById('listaAmigos');
     if (!contenedor) return;
@@ -785,7 +819,7 @@ async function cargarAmigos() {
 }
 
 // ============================================
-// 13. CHAT (sin cambios, pero lo mantenemos)
+// 13. CHAT
 // ============================================
 let chatIniciado = false;
 function inicializarChat() {
