@@ -995,3 +995,8 @@ body {
         transform: scale(0.85);
     }
 }
+
+.btn-add-friend:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
