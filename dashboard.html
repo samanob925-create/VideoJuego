@@ -141,17 +141,30 @@
             </section>
 
             <!-- AMIGOS -->
-            <section id="amigos" class="view-section d-none">
-                <h1 class="section-title"><i class="fas fa-users" style="color: #2ecc71;"></i> Amigos y Chat</h1>
-                <h3 class="subsection-title"><i class="fas fa-user-friends"></i> Usuarios registrados</h3>
-                <div id="listaUsuarios" class="friends-container"></div>
-                <h3 class="subsection-title"><i class="fas fa-comments"></i> Foro Global</h3>
-                <div class="chat-box" id="caja-mensajes"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="inputMensaje" placeholder="Escribe un mensaje...">
-                    <button id="btnEnviarMensaje"><i class="fas fa-paper-plane"></i> Enviar</button>
-                </div>
-            </section>
+            <!-- Dentro de la sección #amigos -->
+<section id="amigos" class="view-section d-none">
+    <h1 class="section-title"><i class="fas fa-users" style="color: #2ecc71;"></i> Amigos y Chat</h1>
+    
+    <!-- Solicitudes pendientes -->
+    <h3 class="subsection-title"><i class="fas fa-bell"></i> Solicitudes pendientes</h3>
+    <div id="solicitudesPendientes" class="friends-container"></div>
+    
+    <!-- Mis amigos -->
+    <h3 class="subsection-title"><i class="fas fa-user-friends"></i> Mis amigos</h3>
+    <div id="listaAmigos" class="friends-container"></div>
+    
+    <!-- Usuarios registrados (para enviar solicitudes) -->
+    <h3 class="subsection-title"><i class="fas fa-user-plus"></i> Usuarios registrados</h3>
+    <div id="listaUsuarios" class="friends-container"></div>
+    
+    <!-- Chat -->
+    <h3 class="subsection-title"><i class="fas fa-comments"></i> Foro Global</h3>
+    <div class="chat-box" id="caja-mensajes"></div>
+    <div class="chat-input-area">
+        <input type="text" id="inputMensaje" placeholder="Escribe un mensaje...">
+        <button id="btnEnviarMensaje"><i class="fas fa-paper-plane"></i> Enviar</button>
+    </div>
+</section>
 
             <!-- NOTICIAS -->
             <section id="noticias" class="view-section d-none">
