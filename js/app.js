@@ -8,7 +8,7 @@ import {
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // Cambia por tu clave de NewsData.io
+const NEWS_API_KEY = "pub_12345abcde"; // Cambia por tu clave de NewsData.io
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -435,15 +435,26 @@ async function cargarFavoritos() {
 // ============================================
 window.verDetalle = async function(juegoId) {
     try {
-        // Mostrar loading en el modal
-        document.getElementById('detalleNombre').textContent = 'Cargando...';
-        document.getElementById('detalleImagen').src = '';
-        document.getElementById('detalleDescripcion').textContent = 'Cargando descripcion...';
-        document.getElementById('detalleFecha').textContent = '';
-        document.getElementById('detalleRating').textContent = '';
-        document.getElementById('detallePlataformas').textContent = '';
-        document.getElementById('detalleDesarrollador').textContent = '';
-        document.getElementById('detalleGeneros').textContent = '';
+        // Referencias a los elementos del DOM
+        const nombreEl = document.getElementById('detalleNombre');
+        const imagenEl = document.getElementById('detalleImagen');
+        const fechaEl = document.getElementById('detalleFecha');
+        const ratingEl = document.getElementById('detalleRating');
+        const plataformasEl = document.getElementById('detallePlataformas');
+        const desarrolladorEl = document.getElementById('detalleDesarrollador');
+        const generosEl = document.getElementById('detalleGeneros');
+        const descripcionEl = document.getElementById('detalleDescripcion');
+
+        // Mostrar estado de carga
+        if (nombreEl) nombreEl.textContent = 'Cargando...';
+        if (imagenEl) imagenEl.src = '';
+        if (fechaEl) fechaEl.textContent = '---';
+        if (ratingEl) ratingEl.textContent = '---';
+        if (plataformasEl) plataformasEl.textContent = '---';
+        if (desarrolladorEl) desarrolladorEl.textContent = '---';
+        if (generosEl) generosEl.textContent = '---';
+        if (descripcionEl) descripcionEl.textContent = 'Cargando descripción...';
+
         modal.classList.remove('d-none');
 
         // Obtener datos del juego
@@ -452,23 +463,21 @@ window.verDetalle = async function(juegoId) {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const juego = await resp.json();
 
-        // Limpiar y formatear descripción (quitar texto repetido)
-        let descripcion = juego.description_raw || 'Sin descripcion disponible.';
-        // Quitar texto repetido (cuando se repite la misma frase varias veces)
+        // Limpiar y formatear descripción
+        let descripcion = juego.description_raw || 'Sin descripción disponible.';
+        // Eliminar texto repetido
         const palabras = descripcion.split(' ');
         if (palabras.length > 10) {
             const primerasPalabras = palabras.slice(0, 10).join(' ');
-            // Si la descripción contiene la misma frase repetida, quedarse solo con la primera parte
             if (descripcion.includes(primerasPalabras + ' ' + primerasPalabras)) {
                 descripcion = palabras.slice(0, palabras.length / 2).join(' ');
             }
         }
-        // Limitar a 500 caracteres para no saturar
         if (descripcion.length > 500) {
             descripcion = descripcion.substring(0, 500) + '...';
         }
 
-        // Traducir al español usando Google Translate API (gratuita)
+        // Traducir al español
         let descripcionTraducida = descripcion;
         try {
             const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(descripcion)}`;
@@ -481,18 +490,17 @@ window.verDetalle = async function(juegoId) {
             }
         } catch (translateError) {
             console.warn('Error al traducir, usando texto original:', translateError);
-            // Si falla la traducción, usamos el texto original
         }
 
-        // Actualizar modal
-        document.getElementById('detalleNombre').textContent = juego.name;
-        document.getElementById('detalleImagen').src = juego.background_image || 'https://via.placeholder.com/600x300?text=Sin+imagen';
-        document.getElementById('detalleDescripcion').textContent = descripcionTraducida;
-        document.getElementById('detalleFecha').textContent = 'Lanzamiento: ' + (juego.released || 'Desconocido');
-        document.getElementById('detalleRating').textContent = 'Rating: ' + juego.rating + ' / 5 (' + juego.ratings_count + ' votos)';
-        document.getElementById('detallePlataformas').textContent = 'Plataformas: ' + juego.platforms.map(p => p.platform.name).join(', ');
-        document.getElementById('detalleDesarrollador').textContent = 'Desarrollador: ' + (juego.developers ? juego.developers.map(d => d.name).join(', ') : 'Desconocido');
-        document.getElementById('detalleGeneros').textContent = 'Generos: ' + (juego.genres ? juego.genres.map(g => g.name).join(', ') : 'No especificado');
+        // Asignar valores
+        if (nombreEl) nombreEl.textContent = juego.name || 'Nombre desconocido';
+        if (imagenEl) imagenEl.src = juego.background_image || 'https://via.placeholder.com/600x300?text=Sin+imagen';
+        if (fechaEl) fechaEl.textContent = juego.released || 'Desconocido';
+        if (ratingEl) ratingEl.textContent = `${juego.rating || 'N/A'} / 5 (${juego.ratings_count || 0} votos)`;
+        if (plataformasEl) plataformasEl.textContent = juego.platforms ? juego.platforms.map(p => p.platform.name).join(', ') : 'No especificado';
+        if (desarrolladorEl) desarrolladorEl.textContent = juego.developers ? juego.developers.map(d => d.name).join(', ') : 'Desconocido';
+        if (generosEl) generosEl.textContent = juego.genres ? juego.genres.map(g => g.name).join(', ') : 'No especificado';
+        if (descripcionEl) descripcionEl.textContent = descripcionTraducida;
 
     } catch (error) {
         console.error('Error al cargar detalles:', error);
