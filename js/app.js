@@ -2,13 +2,13 @@ import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { 
     collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, 
-    getDocs, doc, getDoc, setDoc, deleteDoc, where 
+    getDocs, doc, getDoc, setDoc, deleteDoc, where, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ===== CONSTANTES =====
 const RAWG_API_KEY = "6a50394d2ecd49c48854049867f7f0ed";
 const BASE_URL = "https://api.rawg.io/api/games";
-const NEWS_API_KEY = "pub_9e707de453b649259bfeb2145328c646"; // Cambia por tu clave de NewsData.io
+const NEWS_API_KEY = "pub_12345abcde"; // Cambia por tu clave de NewsData.io
 
 // ===== ESTADO =====
 let currentPlatform = "all";
@@ -35,7 +35,7 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
 
-        // --- Sincronizar usuario a Firestore si no existe ---
+        // Sincronizar usuario a Firestore si no existe
         try {
             const userDocRef = doc(db, "usuarios", user.uid);
             const docSnap = await getDoc(userDocRef);
@@ -62,8 +62,10 @@ onAuthStateChanged(auth, async (user) => {
         const displayEmail = document.getElementById('displayEmail');
         if (displayEmail) displayEmail.innerText = user.email;
 
-        // Cargar lista de usuarios (para amigos)
+        // Cargar lista de usuarios y solicitudes
         cargarUsuarios();
+        cargarSolicitudesPendientes();
+        cargarAmigos();
     } else {
         window.location.href = "index.html";
     }
@@ -106,6 +108,8 @@ navItems.forEach(item => {
             case 'amigos':
                 inicializarChat();
                 cargarUsuarios();
+                cargarSolicitudesPendientes();
+                cargarAmigos();
                 break;
             case 'noticias':
                 cargarNoticias();
@@ -402,7 +406,7 @@ async function cargarFavoritos() {
         const q = query(collection(db, "favoritos"), where("uid", "==", currentUser.uid));
         const snap = await getDocs(q);
         if (snap.empty) {
-            contenedor.innerHTML = '<p style="color:#888;">No tienes favoritos aún. Agrega juegos desde las listas.</p>';
+            contenedor.innerHTML = '<p style="color:#888;">No tienes favoritos aun. Agrega juegos desde las listas.</p>';
             return;
         }
         const favoritos = [];
@@ -442,12 +446,12 @@ window.verDetalle = async function(juegoId) {
 
         document.getElementById('detalleNombre').textContent = juego.name;
         document.getElementById('detalleImagen').src = juego.background_image || 'https://via.placeholder.com/600x300?text=Sin+imagen';
-        document.getElementById('detalleDescripcion').textContent = juego.description_raw || 'Sin descripción disponible.';
-        document.getElementById('detalleFecha').textContent = `Lanzamiento: ${juego.released || 'Desconocido'}`;
-        document.getElementById('detalleRating').textContent = `Rating: ${juego.rating} / 5 (${juego.ratings_count} votos)`;
-        document.getElementById('detallePlataformas').textContent = `Plataformas: ${juego.platforms.map(p => p.platform.name).join(', ')}`;
-        document.getElementById('detalleDesarrollador').textContent = `Desarrollador: ${juego.developers ? juego.developers.map(d => d.name).join(', ') : 'Desconocido'}`;
-        document.getElementById('detalleGeneros').textContent = `Géneros: ${juego.genres ? juego.genres.map(g => g.name).join(', ') : 'No especificado'}`;
+        document.getElementById('detalleDescripcion').textContent = juego.description_raw || 'Sin descripcion disponible.';
+        document.getElementById('detalleFecha').textContent = 'Lanzamiento: ' + (juego.released || 'Desconocido');
+        document.getElementById('detalleRating').textContent = 'Rating: ' + juego.rating + ' / 5 (' + juego.ratings_count + ' votos)';
+        document.getElementById('detallePlataformas').textContent = 'Plataformas: ' + juego.platforms.map(p => p.platform.name).join(', ');
+        document.getElementById('detalleDesarrollador').textContent = 'Desarrollador: ' + (juego.developers ? juego.developers.map(d => d.name).join(', ') : 'Desconocido');
+        document.getElementById('detalleGeneros').textContent = 'Generos: ' + (juego.genres ? juego.genres.map(g => g.name).join(', ') : 'No especificado');
 
         modal.classList.remove('d-none');
     } catch (error) {
@@ -486,8 +490,8 @@ async function cargarNoticias() {
                 <img src="${noticia.image_url || 'https://via.placeholder.com/150x100?text=Noticia'}" alt="${noticia.title}">
                 <div>
                     <h3>${noticia.title}</h3>
-                    <p>${noticia.description || 'Sin descripción.'}</p>
-                    <a href="${noticia.link}" target="_blank">Leer más</a>
+                    <p>${noticia.description || 'Sin descripcion.'}</p>
+                    <a href="${noticia.link}" target="_blank">Leer mas</a>
                     <span style="font-size:0.8rem; color:#999; margin-left:10px;">${noticia.pubDate ? new Date(noticia.pubDate).toLocaleDateString() : ''}</span>
                 </div>
             `;
@@ -500,19 +504,19 @@ async function cargarNoticias() {
 }
 
 // ============================================
-// 12. AMIGOS / USUARIOS REGISTRADOS
+// 12. SISTEMA DE AMISTADES
 // ============================================
+
+// 12a. Cargar usuarios registrados (para enviar solicitudes)
 async function cargarUsuarios() {
     const contenedor = document.getElementById('listaUsuarios');
     if (!contenedor) return;
 
     try {
-        // Obtener todos los usuarios de Firestore
         const snap = await getDocs(collection(db, "usuarios"));
         const usuarios = [];
         snap.forEach(doc => {
             const data = doc.data();
-            // Excluir al usuario actual
             if (doc.id !== currentUser?.uid) {
                 usuarios.push({
                     uid: doc.id,
@@ -549,11 +553,12 @@ async function cargarUsuarios() {
             contenedor.appendChild(card);
         });
 
-        // Evento para botones "Agregar" (puedes implementar solicitud real si quieres)
+        // Evento para enviar solicitud
         contenedor.querySelectorAll('.btn-add-friend').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const nombre = btn.dataset.nombre;
-                alert(`Solicitud de amistad enviada a ${nombre} (funcionalidad en desarrollo)`);
+            btn.addEventListener('click', async () => {
+                const destinatarioUid = btn.dataset.uid;
+                const destinatarioNombre = btn.dataset.nombre;
+                await enviarSolicitudAmistad(destinatarioUid, destinatarioNombre);
             });
         });
 
@@ -563,8 +568,224 @@ async function cargarUsuarios() {
     }
 }
 
+// 12b. Enviar solicitud de amistad
+async function enviarSolicitudAmistad(destinatarioUid, destinatarioNombre) {
+    if (!currentUser) return;
+    if (destinatarioUid === currentUser.uid) {
+        alert('No puedes enviarte solicitud a ti mismo.');
+        return;
+    }
+
+    try {
+        // Verificar si ya existe una solicitud pendiente o aceptada
+        const q1 = query(
+            collection(db, "solicitudes"),
+            where("remitenteUid", "==", currentUser.uid),
+            where("destinatarioUid", "==", destinatarioUid)
+        );
+        const snap1 = await getDocs(q1);
+        if (!snap1.empty) {
+            const estado = snap1.docs[0].data().estado;
+            if (estado === 'pendiente') {
+                alert('Ya enviaste una solicitud a ' + destinatarioNombre + '. Espera que la acepte.');
+                return;
+            } else if (estado === 'aceptada') {
+                alert('Ya son amigos.');
+                return;
+            }
+        }
+
+        // Verificar si el destinatario ya te envió solicitud
+        const q2 = query(
+            collection(db, "solicitudes"),
+            where("remitenteUid", "==", destinatarioUid),
+            where("destinatarioUid", "==", currentUser.uid),
+            where("estado", "==", "pendiente")
+        );
+        const snap2 = await getDocs(q2);
+        if (!snap2.empty) {
+            alert(destinatarioNombre + ' ya te envio una solicitud. Ve a "Solicitudes pendientes" para aceptarla.');
+            return;
+        }
+
+        // Crear solicitud
+        await addDoc(collection(db, "solicitudes"), {
+            remitenteUid: currentUser.uid,
+            remitenteNombre: currentUser.email.split('@')[0],
+            destinatarioUid: destinatarioUid,
+            destinatarioNombre: destinatarioNombre,
+            estado: 'pendiente',
+            timestamp: serverTimestamp()
+        });
+
+        alert('Solicitud de amistad enviada a ' + destinatarioNombre);
+        // Recargar lista de solicitudes pendientes
+        cargarSolicitudesPendientes();
+    } catch (error) {
+        console.error('Error al enviar solicitud:', error);
+        alert('Error al enviar solicitud: ' + error.message);
+    }
+}
+
+// 12c. Cargar solicitudes pendientes (recibidas)
+async function cargarSolicitudesPendientes() {
+    const contenedor = document.getElementById('solicitudesPendientes');
+    if (!contenedor) return;
+    if (!currentUser) {
+        contenedor.innerHTML = '<p>Inicia sesion para ver solicitudes.</p>';
+        return;
+    }
+
+    try {
+        const q = query(
+            collection(db, "solicitudes"),
+            where("destinatarioUid", "==", currentUser.uid),
+            where("estado", "==", "pendiente")
+        );
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            contenedor.innerHTML = '<p style="color:#888;">No tienes solicitudes pendientes.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = '';
+        snap.forEach(doc => {
+            const data = doc.data();
+            const solicitudId = doc.id;
+            const card = document.createElement('div');
+            card.className = 'friend-card';
+            card.innerHTML = `
+                <div class="friend-info">
+                    <div class="friend-avatar" style="background: #f39c12;">${data.remitenteNombre.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <h4>${data.remitenteNombre}</h4>
+                        <span style="font-size:0.8rem; color:#666;">Te ha enviado una solicitud</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-add-friend" style="background: #2ecc71;" onclick="aceptarSolicitud('${solicitudId}')"><i class="fas fa-check"></i> Aceptar</button>
+                    <button class="btn-add-friend" style="background: #e74c3c;" onclick="rechazarSolicitud('${solicitudId}')"><i class="fas fa-times"></i> Rechazar</button>
+                </div>
+            `;
+            contenedor.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error al cargar solicitudes:', error);
+        contenedor.innerHTML = `<p style="color:red;">Error al cargar solicitudes: ${error.message}</p>`;
+    }
+}
+
+// 12d. Aceptar solicitud
+window.aceptarSolicitud = async function(solicitudId) {
+    try {
+        const docRef = doc(db, "solicitudes", solicitudId);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            alert('La solicitud ya no existe.');
+            return;
+        }
+        const data = docSnap.data();
+        if (data.destinatarioUid !== currentUser.uid) {
+            alert('No tienes permiso para aceptar esta solicitud.');
+            return;
+        }
+
+        // Actualizar estado a 'aceptada'
+        await updateDoc(docRef, { estado: 'aceptada' });
+
+        // Agregar a la lista de amigos (opcional: puedes crear una colección "amigos" o simplemente filtrar solicitudes aceptadas)
+        // Aquí usaremos la colección "amigos" para tener una lista separada
+        await addDoc(collection(db, "amigos"), {
+            uid: currentUser.uid,
+            amigoUid: data.remitenteUid,
+            amigoNombre: data.remitenteNombre,
+            fecha: serverTimestamp()
+        });
+        await addDoc(collection(db, "amigos"), {
+            uid: data.remitenteUid,
+            amigoUid: currentUser.uid,
+            amigoNombre: currentUser.email.split('@')[0],
+            fecha: serverTimestamp()
+        });
+
+        alert('Solicitud aceptada. Ahora son amigos.');
+        cargarSolicitudesPendientes();
+        cargarAmigos();
+    } catch (error) {
+        console.error('Error al aceptar solicitud:', error);
+        alert('Error al aceptar solicitud: ' + error.message);
+    }
+};
+
+// 12e. Rechazar solicitud
+window.rechazarSolicitud = async function(solicitudId) {
+    try {
+        const docRef = doc(db, "solicitudes", solicitudId);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            alert('La solicitud ya no existe.');
+            return;
+        }
+        const data = docSnap.data();
+        if (data.destinatarioUid !== currentUser.uid) {
+            alert('No tienes permiso para rechazar esta solicitud.');
+            return;
+        }
+        await updateDoc(docRef, { estado: 'rechazada' });
+        alert('Solicitud rechazada.');
+        cargarSolicitudesPendientes();
+    } catch (error) {
+        console.error('Error al rechazar solicitud:', error);
+        alert('Error al rechazar solicitud: ' + error.message);
+    }
+};
+
+// 12f. Cargar lista de amigos (solicitudes aceptadas)
+async function cargarAmigos() {
+    const contenedor = document.getElementById('listaAmigos');
+    if (!contenedor) return;
+    if (!currentUser) {
+        contenedor.innerHTML = '<p>Inicia sesion para ver tus amigos.</p>';
+        return;
+    }
+
+    try {
+        const q = query(
+            collection(db, "amigos"),
+            where("uid", "==", currentUser.uid)
+        );
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            contenedor.innerHTML = '<p style="color:#888;">Aun no tienes amigos. Envia solicitudes a otros usuarios.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = '';
+        snap.forEach(doc => {
+            const data = doc.data();
+            const card = document.createElement('div');
+            card.className = 'friend-card';
+            const initial = data.amigoNombre.charAt(0).toUpperCase();
+            card.innerHTML = `
+                <div class="friend-info">
+                    <div class="friend-avatar" style="background: #2ecc71;">${initial}</div>
+                    <div>
+                        <h4>${data.amigoNombre}</h4>
+                        <span style="font-size:0.8rem; color:#666;">Amigo</span>
+                    </div>
+                </div>
+                <button class="btn-add-friend" style="background: #95a5a6;" disabled><i class="fas fa-check-circle"></i> Amigo</button>
+            `;
+            contenedor.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error al cargar amigos:', error);
+        contenedor.innerHTML = `<p style="color:red;">Error al cargar amigos: ${error.message}</p>`;
+    }
+}
+
 // ============================================
-// 13. CHAT
+// 13. CHAT (sin cambios, pero lo mantenemos)
 // ============================================
 let chatIniciado = false;
 function inicializarChat() {
