@@ -48,7 +48,7 @@ if (loginForm) {
 }
 
 // ============================================
-// 2. REGISTRO
+// 2. REGISTRO (con redirección asegurada)
 // ============================================
 const registroForm = document.getElementById('registroForm');
 if (registroForm) {
@@ -79,9 +79,11 @@ if (registroForm) {
         }
 
         try {
+            // Crear usuario en Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Guardar en Firestore
             await setDoc(doc(db, "usuarios", user.uid), {
                 nombre: nombre || email.split('@')[0],
                 email: email,
@@ -89,7 +91,11 @@ if (registroForm) {
             });
 
             alert('Cuenta creada exitosamente. Seras redirigido al dashboard.');
-            window.location.href = "dashboard.html";
+            // Redirigir después de un breve retraso para asegurar que el token esté listo
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 500);
+
         } catch (error) {
             let mensaje = '';
             let sugerencia = '';
